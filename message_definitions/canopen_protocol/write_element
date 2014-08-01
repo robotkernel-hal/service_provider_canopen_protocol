@@ -1,0 +1,9 @@
+service
+
+request
+uint16_t    index
+uint8_t     sub_index
+char*       value
+
+response
+int32_t     state

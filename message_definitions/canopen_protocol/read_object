@@ -1,0 +1,12 @@
+service
+
+request
+uint16_t    index
+
+response
+int32_t     state
+uint16_t    data_type
+uint8_t     objcode
+uint8_t     max_subindices
+char*       name
+
