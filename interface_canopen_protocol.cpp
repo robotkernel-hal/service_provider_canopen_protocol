@@ -26,7 +26,7 @@
 
 #include "interface_canopen_protocol.h"
 #include "config.h"
-#include "exceptions.h"
+#include "robotkernel/exceptions.h"
 
 using namespace std;
 using namespace robotkernel;
