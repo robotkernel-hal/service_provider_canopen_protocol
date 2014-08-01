@@ -1,4 +1,6 @@
-libdir = $(prefix)/lib/robotkernel/interfaces
+ACLOCAL_AMFLAGS = -I m4 
+
+libdir = $(prefix)/lib
 lib_LTLIBRARIES = libinterface_canopen_protocol.la
 BUILT_SOURCES = ln_messages.h
 CLEANFILES = ln_messages.h
@@ -11,10 +13,10 @@ libinterface_canopen_protocol_la_LDFLAGS  = -Wall @PTHREAD_LIBS@ @RT_LIBS@ -rele
 VPATH = $(srcdir):$(srcdir)/message_definitions
 
 LN_MESSAGES = \
-			  canopen_protocol/read_object \
-			  canopen_protocol/read_element \
-			  canopen_protocol/write_element \
-			  canopen_protocol/object_dictionary_list
+			  robotkernel/canopen_protocol/read_object \
+			  robotkernel/canopen_protocol/read_element \
+			  robotkernel/canopen_protocol/write_element \
+			  robotkernel/canopen_protocol/object_dictionary_list
 
 ln_messages.h: Makefile $(LN_MESSAGES)
 	@echo creating ln_messages.h
