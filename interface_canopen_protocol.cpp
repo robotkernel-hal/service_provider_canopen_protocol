@@ -191,7 +191,7 @@ canopen_protocol::canopen_protocol(const std::string& mod_name, const std::strin
 }
 
 int canopen_protocol::on_read_element(ln::service_request& req, 
-        ln_service_canopen_protocol_read_element& svc) {
+        ln_service_robotkernel_canopen_protocol_read_element& svc) {
 
     canopen_element_description desc;
     memset(&desc, 0, sizeof(desc));
@@ -237,7 +237,7 @@ int canopen_protocol::on_read_element(ln::service_request& req,
     return 0;
 }
         
-int canopen_protocol::on_read_object(ln::service_request& req, ln_service_canopen_protocol_read_object& svc) {
+int canopen_protocol::on_read_object(ln::service_request& req, ln_service_robotkernel_canopen_protocol_read_object& svc) {
     canopen_object_description desc;
     memset(&desc, 0, sizeof(desc));
     desc.slave_id = _slave_id;
@@ -257,7 +257,7 @@ int canopen_protocol::on_read_object(ln::service_request& req, ln_service_canope
     return 0;
 }
 
-int canopen_protocol::on_write_element(ln::service_request& req, ln_service_canopen_protocol_write_element& svc) {
+int canopen_protocol::on_write_element(ln::service_request& req, ln_service_robotkernel_canopen_protocol_write_element& svc) {
     canopen_element_description desc;
     memset(&desc, 0, sizeof(desc));
     desc.slave_id = _slave_id;
@@ -421,7 +421,7 @@ int canopen_protocol::on_write_element(ln::service_request& req, ln_service_cano
     return 0;
 }
         
-int canopen_protocol::on_object_dictionary_list(ln::service_request& req, ln_service_canopen_protocol_object_dictionary_list& svc) {
+int canopen_protocol::on_object_dictionary_list(ln::service_request& req, ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc) {
     canopen_object_dictionary_list list;
     list.slave_id = _slave_id;
     list.indices_cnt = 0;

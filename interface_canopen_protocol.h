@@ -56,10 +56,10 @@ class canopen_protocol :
          */
         canopen_protocol(const std::string& mod_name, const std::string& dev_name, const int& slave_id);
 
-        int on_read_element(ln::service_request& req, ln_service_canopen_protocol_read_element& svc);
-        int on_read_object(ln::service_request& req, ln_service_canopen_protocol_read_object& svc);
-        int on_write_element(ln::service_request& req, ln_service_canopen_protocol_write_element& svc);
-        int on_object_dictionary_list(ln::service_request& req, ln_service_canopen_protocol_object_dictionary_list& svc);
+        int on_read_element(ln::service_request& req, ln_service_robotkernel_canopen_protocol_read_element& svc);
+        int on_read_object(ln::service_request& req, ln_service_robotkernel_canopen_protocol_read_object& svc);
+        int on_write_element(ln::service_request& req, ln_service_robotkernel_canopen_protocol_write_element& svc);
+        int on_object_dictionary_list(ln::service_request& req, ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc);
 };
 
 } // namespace interface
