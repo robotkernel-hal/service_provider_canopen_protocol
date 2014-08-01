@@ -7,8 +7,8 @@ CLEANFILES = ln_messages.h
 
 libinterface_canopen_protocol_la_SOURCES  = interface_canopen_protocol.cpp
 libinterface_canopen_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(top_srcdir)/src \
-										   -I$(top_builddir) @YAMLCPP_CFLAGS@ @LN_CFLAGS@ 
-libinterface_canopen_protocol_la_LDFLAGS  = -Wall @PTHREAD_LIBS@ @RT_LIBS@ -release $(PACKAGE_VERSION)
+										   -I$(top_builddir) @ROBOTKERNEL_CFLAGS@ @YAMLCPP_CFLAGS@ @LN_CFLAGS@ 
+libinterface_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
 VPATH = $(srcdir):$(srcdir)/message_definitions
 
