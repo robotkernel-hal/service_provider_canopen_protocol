@@ -25,8 +25,15 @@
 #include <string_util/string_util.h>
 
 #include "interface_canopen_protocol.h"
-#include "config.h"
 #include "robotkernel/exceptions.h"
+#undef BUILD_DATE
+#undef PACKAGE
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef VERSION
+#include "config.h"
 
 using namespace std;
 using namespace robotkernel;
@@ -160,10 +167,15 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
             return string((char *)usdo);
         default:
         case ECT_OCTET_STRING: {
-            string ans = "";
+            string ans = "[ ";
 
-            for (int i = 0 ; i < l ; i++)
+            for (int i = 0; i < l; ++i) {
                 ans += format_string("0x%2.2x ", usdo[i]);
+                if (i < l)
+                    ans += ", ";
+            }
+
+            ans += "]";
 
             return ans;
         }
