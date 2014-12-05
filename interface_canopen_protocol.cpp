@@ -5,6 +5,8 @@
  * $Id$
  */
 
+// vim: tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
+
 /*
  * This file is part of robotkernel.
  *
@@ -477,14 +479,14 @@ extern "C" {
 INTERFACE_HANDLE intf_register(const char *mod_name, const char *dev_name, int slave_id) {
     canopen_protocol *s = NULL;
 
-    klog(info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
-    klog(info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
+    klog(interface_info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
+    klog(interface_info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
 
     // parsing sercos ring configuration
     try {
         s = new canopen_protocol(string(mod_name), string(dev_name), slave_id);
     } catch(exception& e) {
-        klog(error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
+        klog(interface_error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
         goto ErrorExit;
     }
 
