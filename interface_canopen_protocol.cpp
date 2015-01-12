@@ -166,7 +166,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
         case ECT_BIT8:
             return format_string("0x%X", *(uint8_t *)usdo);
         case ECT_VISIBLE_STRING:
-            return string((char *)usdo);
+            return string((char *)usdo, l);
         default:
         case ECT_OCTET_STRING: {
             string ans = "[ ";
