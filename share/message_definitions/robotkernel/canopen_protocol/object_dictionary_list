@@ -5,4 +5,5 @@ request
 response
 int32_t     state
 uint16_t*   indices
+char*       error_message
 

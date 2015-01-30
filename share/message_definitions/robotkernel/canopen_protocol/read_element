@@ -12,4 +12,4 @@ uint16_t    data_type
 uint16_t    bit_length
 uint16_t    obj_access
 char*       value
-
+char*       error_message

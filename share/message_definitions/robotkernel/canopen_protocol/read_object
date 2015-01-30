@@ -9,4 +9,5 @@ uint16_t    data_type
 uint8_t     objcode
 uint8_t     max_subindices
 char*       name
+char*       error_message
 

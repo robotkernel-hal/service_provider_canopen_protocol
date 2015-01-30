@@ -7,3 +7,4 @@ char*       value
 
 response
 int32_t     state
+char*       error_message

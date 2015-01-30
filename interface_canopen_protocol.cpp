@@ -1,4 +1,4 @@
-//! robotkernel module class
+//! robotkernel interface canopen protocol
 /*!
  * author: Robert Burger
  *
@@ -27,6 +27,7 @@
 #include <string_util/string_util.h>
 
 #include "interface_canopen_protocol.h"
+#include "robotkernel/kernel.h"
 #include "robotkernel/exceptions.h"
 #undef BUILD_DATE
 #undef PACKAGE
@@ -70,7 +71,7 @@ typedef enum {
    ECT_BIT6            = 0x0035,
    ECT_BIT7            = 0x0036,
    ECT_BIT8            = 0x0037
-} ec_datatype;
+} ec_data_type;
 
 string data_type_to_string(uint16_t dtype) {
     switch(dtype) {
@@ -187,13 +188,16 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
 //! default construction
 /*!
  * \param mod_name module name to register for
+ * \param dev_name device name for service
+ * \param slave_id slave id to send requests to
  */
-canopen_protocol::canopen_protocol(const std::string& mod_name, const std::string& dev_name, const int& slave_id) 
+canopen_protocol::canopen_protocol(const std::string& mod_name, 
+        const std::string& dev_name, const int& slave_id) 
     : _mod_name(mod_name), _dev_name(dev_name), _slave_id(slave_id) {
     kernel& k = *kernel::get_instance();
     if (!k.clnt)
-        throw robotkernel::str_exception("[interface_sercos_protocol|%s] no ln_connection!\n", 
-                mod_name.c_str());
+        throw robotkernel::str_exception("[interface_sercos_protocol|%s] "
+                "no ln_connection!\n", mod_name.c_str());
 
     stringstream base;
     base << k.clnt->name << "." << _mod_name << "." << _dev_name << ".";
@@ -201,29 +205,39 @@ canopen_protocol::canopen_protocol(const std::string& mod_name, const std::strin
     register_read_element(k.clnt, base.str() + "canopen_protocol.read_element");
     register_read_object(k.clnt, base.str() + "canopen_protocol.read_object");
     register_write_element(k.clnt, base.str() + "canopen_protocol.write_element");
-    register_object_dictionary_list(k.clnt, base.str() + "canopen_protocol.object_dictionary_list");
+    register_object_dictionary_list(k.clnt, base.str() + 
+            "canopen_protocol.object_dictionary_list");
 }
 
+//! service callback read element
 int canopen_protocol::on_read_element(ln::service_request& req, 
         ln_service_robotkernel_canopen_protocol_read_element& svc) {
-
     canopen_element_description desc;
     memset(&desc, 0, sizeof(desc));
-    desc.slave_id = _slave_id;
-    desc.index = svc.req.index;
-    desc.sub_index = svc.req.sub_index;
+    desc.slave_id   = _slave_id;
+    desc.index      = svc.req.index;
+    desc.sub_index  = svc.req.sub_index;
+
+    // reset error message
+    svc.resp.error_message = NULL;
+    svc.resp.error_message_len = 0;
     
-    // execute procedure command    
+    // execute module request read element description
     svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC, (void *)&desc);
 
-    svc.resp.name       = strdup(desc.name);
-    svc.resp.name_len   = strlen(svc.resp.name);
-    svc.resp.value_info = desc.value_info;
-    svc.resp.data_type  = desc.data_type;
-    svc.resp.bit_length = desc.bit_length;
-    svc.resp.obj_access = desc.obj_access;
-
+    if (svc.resp.state == 0) {
+        svc.resp.name       = strdup(desc.name);
+        svc.resp.name_len   = strlen(svc.resp.name);
+        svc.resp.value_info = desc.value_info;
+        svc.resp.data_type  = desc.data_type;
+        svc.resp.bit_length = desc.bit_length;
+        svc.resp.obj_access = desc.obj_access;
+    } else {
+        svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC failed!");
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+        goto Exit;
+    }
     
     canopen_element_value value;
     value.slave_id  = _slave_id;
@@ -232,13 +246,20 @@ int canopen_protocol::on_read_element(ln::service_request& req,
     value.value_len = (desc.bit_length + 7) / 8;
     value.value     = new uint8_t[value.value_len]();
     
-    // execute procedure command    
+    // execute module request read element value
     svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_VALUE, (void *)&value);
 
-    svc.resp.value = strdup(value_2_string(value.value, value.value_len, desc.data_type).c_str());
-    svc.resp.value_len = strlen(svc.resp.value);
+    if (svc.resp.state == 0) {
+        svc.resp.value = strdup(value_2_string(value.value, value.value_len, 
+                    desc.data_type).c_str());
+        svc.resp.value_len = strlen(svc.resp.value);
+    } else {
+        svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_ELEMENT_VALUE failed!");
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+    }
 
+Exit:
     req.respond();
 
     if (value.value)
@@ -247,40 +268,74 @@ int canopen_protocol::on_read_element(ln::service_request& req,
         free(svc.resp.value);
     if (svc.resp.name)
         free(svc.resp.name);
+    if (svc.resp.error_message)
+        free(svc.resp.error_message);
 
     return 0;
 }
         
-int canopen_protocol::on_read_object(ln::service_request& req, ln_service_robotkernel_canopen_protocol_read_object& svc) {
+//! service callback read object
+int canopen_protocol::on_read_object(ln::service_request& req, 
+        ln_service_robotkernel_canopen_protocol_read_object& svc) {
     canopen_object_description desc;
     memset(&desc, 0, sizeof(desc));
     desc.slave_id = _slave_id;
     desc.index = svc.req.index;
 
+    // reset error message
+    svc.resp.error_message = NULL;
+    svc.resp.error_message_len = 0;
+    
     // execute request
     svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_OBJECT_DESC, (void *)&desc);
-    
-    svc.resp.data_type      = desc.data_type;
-    svc.resp.objcode        = desc.object_code;
-    svc.resp.max_subindices = desc.max_subindices;
-    svc.resp.name           = desc.name;
-    svc.resp.name_len       = strlen(desc.name);
 
+    if (svc.resp.state == 0) {
+        svc.resp.data_type      = desc.data_type;
+        svc.resp.objcode        = desc.object_code;
+        svc.resp.max_subindices = desc.max_subindices;
+        svc.resp.name           = desc.name;
+        svc.resp.name_len       = strlen(desc.name);
+    } else {
+        svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_OBJECT_DESC failed!");
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+    }
+    
     req.respond();
+
+    if (svc.resp.error_message)
+        free(svc.resp.error_message);
+
     return 0;
 }
 
-int canopen_protocol::on_write_element(ln::service_request& req, ln_service_robotkernel_canopen_protocol_write_element& svc) {
+int canopen_protocol::on_write_element(ln::service_request& req, 
+        ln_service_robotkernel_canopen_protocol_write_element& svc) {
     canopen_element_description desc;
     memset(&desc, 0, sizeof(desc));
-    desc.slave_id = _slave_id;
-    desc.index = svc.req.index;
-    desc.sub_index = svc.req.sub_index;
+    desc.slave_id   = _slave_id;
+    desc.index      = svc.req.index;
+    desc.sub_index  = svc.req.sub_index;
+    
+    // reset error message
+    svc.resp.error_message = NULL;
+    svc.resp.error_message_len = 0;    
     
     // execute procedure command    
     svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC, (void *)&desc);
+
+    if (svc.resp.state != 0) {
+        svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC failed!");
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+    
+        req.respond();
+    
+        if (svc.resp.error_message)
+            free(svc.resp.error_message);
+
+        return 0;
+    }
 
     canopen_element_value value;
     value.slave_id  = _slave_id;
@@ -290,9 +345,9 @@ int canopen_protocol::on_write_element(ln::service_request& req, ln_service_robo
     value.value     = new uint8_t[value.value_len]();
     
     string buf(svc.req.value, svc.req.value_len);
-    py_value *pval = eval_full(buf);
-    py_int *pintval = dynamic_cast<py_int *>(pval);
-    py_long *plongval = dynamic_cast<py_long *>(pval);
+    py_value *pval      = eval_full(buf);
+    py_int *pintval     = dynamic_cast<py_int *>(pval);
+    py_long *plongval   = dynamic_cast<py_long *>(pval);
     py_float *pfloatval = dynamic_cast<py_float *>(pval);
 
     bool abort = false;
@@ -405,14 +460,13 @@ int canopen_protocol::on_write_element(ln::service_request& req, ln_service_robo
         case ECT_BIT7:
         case ECT_BIT8:
         case ECT_VISIBLE_STRING:
-        case ECT_OCTET_STRING: {
-//            string ans = "";
-//
-//            for (int i = 0 ; i < l ; i++)
-//                ans += format_string("0x%2.2x ", usdo[i]);
-//
-//            return ans;
-        }
+        case ECT_OCTET_STRING:
+            abort = true;
+
+            svc.resp.error_message = strdup(format_string("not implemented data_type: %s\n", 
+                    data_type_to_string(desc.data_type).c_str()).c_str());
+            svc.resp.error_message_len = strlen(svc.resp.error_message);
+            break;
         default:
             break;
     }
@@ -420,47 +474,77 @@ int canopen_protocol::on_write_element(ln::service_request& req, ln_service_robo
     if (pval)
         delete pval;
 
-    if (!abort)
+    if (!abort) {
         // execute procedure command    
         svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
                 MOD_REQUEST_CANOPEN_WRITE_ELEMENT_VALUE, (void *)&value);
-    else 
+
+        if (svc.resp.state != 0) {
+            svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_WRITE_ELEMENT_VALUE failed!");
+            svc.resp.error_message_len = strlen(svc.resp.error_message);
+        }
+    } else if (svc.resp.error_message == NULL) {
         svc.resp.state = -1;
+        svc.resp.error_message = strdup(format_string("input value failure. need: %s\n", 
+                data_type_to_string(desc.data_type).c_str()).c_str());
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
+    }
     
     req.respond();
     
     if (value.value)
         delete[] value.value;
+    if (svc.resp.error_message)
+        free(svc.resp.error_message);
 
     return 0;
 }
         
-int canopen_protocol::on_object_dictionary_list(ln::service_request& req, ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc) {
+//! service callback list object dictionary
+int canopen_protocol::on_object_dictionary_list(ln::service_request& req, 
+        ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc) {
     canopen_object_dictionary_list list;
     list.slave_id = _slave_id;
     list.indices_cnt = 0;
     list.indices = NULL;
+    
+    // reset error message
+    svc.resp.error_message = NULL;
+    svc.resp.error_message_len = 0; 
 
     // receive cnt first
     svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST, (void *)&list);
 
-    if (list.indices_cnt > 0) {
-        // now allocate buffer and receive index list
-        list.indices = new uint16_t[list.indices_cnt];
-    
-        svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
-            MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST, (void *)&list);
+    if (svc.resp.state == 0) {
+        svc.resp.indices_len = list.indices_cnt;
+
+        if (list.indices_cnt > 0) {
+            // now allocate buffer and receive index list
+            list.indices = new uint16_t[list.indices_cnt];
+
+            svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+                    MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST, (void *)&list);
+        
+            if (svc.resp.state == 0)
+                svc.resp.indices = list.indices;
+            else {
+                svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST failed!");
+                svc.resp.error_message_len = strlen(svc.resp.error_message);
+            }
+        }
+    } else {
+        svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST failed!");
+        svc.resp.error_message_len = strlen(svc.resp.error_message);
     }
 
-    // answer service request
-    svc.resp.indices = list.indices;
-    svc.resp.indices_len = list.indices_cnt;
     req.respond();
-    
+
     if (list.indices)
         delete[] list.indices;
-    
+    if (svc.resp.error_message)
+        free(svc.resp.error_message);
+
     return 0;
 }
 

@@ -6,14 +6,18 @@ BUILT_SOURCES = ln_messages.h
 CLEANFILES = ln_messages.h
 
 libinterface_canopen_protocol_la_SOURCES  = interface_canopen_protocol.cpp
-libinterface_canopen_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(top_srcdir)/src \
-										   -I$(top_builddir) @ROBOTKERNEL_CFLAGS@ 
+
+libinterface_canopen_protocol_la_CXXFLAGS = -fno-strict-aliasing \
+											-Wall \
+											-I$(top_srcdir)/src \
+											-I$(top_builddir) \
+											@ROBOTKERNEL_CFLAGS@ 
+
 libinterface_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-VPATH = $(srcdir):$(srcdir)/message_definitions
+VPATH = $(srcdir):$(srcdir)/share/message_definitions
 
-LN_MESSAGES = \
-			  robotkernel/canopen_protocol/read_object \
+LN_MESSAGES = robotkernel/canopen_protocol/read_object \
 			  robotkernel/canopen_protocol/read_element \
 			  robotkernel/canopen_protocol/write_element \
 			  robotkernel/canopen_protocol/object_dictionary_list
@@ -24,7 +28,6 @@ ln_messages.h: Makefile $(LN_MESSAGES)
 	touch $@
 
 install-exec-hook:
-	mkdir -p $(prefix)/share/message_definitions
-	cp -r $(srcdir)/message_definitions/* $(prefix)/share/message_definitions/
-	mkdir -p $(prefix)/share/ln
-	-cp -rf $(srcdir)/share/ln/* $(prefix)/share/ln/
+	mkdir -p $(prefix)/share
+	-cp -rf $(srcdir)/share/* $(prefix)/share/
+

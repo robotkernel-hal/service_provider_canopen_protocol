@@ -1,9 +1,11 @@
-//! robotkernel module class
+//! robotkernel interface canopen protocol
 /*!
  * author: Robert Burger
  *
  * $Id$
  */
+
+// vim: tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
 
 /*
  * This file is part of robotkernel.
@@ -25,15 +27,11 @@
 #ifndef __INTERFACE_CANOPEN_PROTOCOL_H__
 #define __INTERFACE_CANOPEN_PROTOCOL_H__
 
-#include "robotkernel/kernel.h"
-#include "robotkernel/module.h"
-#include "robotkernel/interface_intf.h"
+#include "module_intf.h"
 
 #define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
 #include "ln_messages.h"
 #undef LN_UNREGISTER_SERVICE_IN_BASE_DETOR
-
-#include <list>
 
 #define INTFNAME "[interface_canopen_protocol] "
 
@@ -45,21 +43,32 @@ class canopen_protocol :
     public ln_service_write_element_base,
     public ln_service_object_dictionary_list_base
 {
-    std::string _mod_name;
-    std::string _dev_name;
-    int _slave_id;
+    std::string _mod_name;  //! request module name
+    std::string _dev_name;  //! service device name
+    int _slave_id;          //! request slave id
 
     public:
         //! default construction
         /*!
-         * \param mod_name module name to register for
+         * \param mod_name module name to send requests to
+         * \param dev_name device name for service
+         * \param slave_id slave id to send requests to
          */
-        canopen_protocol(const std::string& mod_name, const std::string& dev_name, const int& slave_id);
+        canopen_protocol(const std::string& mod_name, 
+                const std::string& dev_name, const int& slave_id);
 
-        int on_read_element(ln::service_request& req, ln_service_robotkernel_canopen_protocol_read_element& svc);
-        int on_read_object(ln::service_request& req, ln_service_robotkernel_canopen_protocol_read_object& svc);
-        int on_write_element(ln::service_request& req, ln_service_robotkernel_canopen_protocol_write_element& svc);
-        int on_object_dictionary_list(ln::service_request& req, ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc);
+        //! service callback read element
+        int on_read_element(ln::service_request& req,
+                ln_service_robotkernel_canopen_protocol_read_element& svc);
+        //! service callback read object
+        int on_read_object(ln::service_request& req,
+                ln_service_robotkernel_canopen_protocol_read_object& svc);
+        //! service callback write element
+        int on_write_element(ln::service_request& req,
+                ln_service_robotkernel_canopen_protocol_write_element& svc);
+        //! service callback list object dictionary
+        int on_object_dictionary_list(ln::service_request& req,
+                ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc);
 };
 
 } // namespace interface
