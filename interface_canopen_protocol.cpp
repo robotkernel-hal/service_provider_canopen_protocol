@@ -126,7 +126,46 @@ string data_type_to_string(uint16_t dtype) {
     }
 
     return format_string("Type 0x%4.4X", dtype);
-}               
+}            
+
+typedef std::map<uint32_t, std::string> abort_code_map_t;
+const abort_code_map_t::value_type raw_abort_code[] = {
+    abort_code_map_t::value_type( 0x00000000, "No error" ),
+    abort_code_map_t::value_type( 0x05030000, "Toggle bit not changed" ),
+    abort_code_map_t::value_type( 0x05040000, "SDO protocol timeout" ),
+    abort_code_map_t::value_type( 0x05040001, "Client/Server command specifier not valid or unknown" ),
+    abort_code_map_t::value_type( 0x05040005, "Out of memory" ),
+    abort_code_map_t::value_type( 0x06010000, "Unsupported access to an object" ),
+    abort_code_map_t::value_type( 0x06010001, "Attempt to read to a write only object" ),
+    abort_code_map_t::value_type( 0x06010002, "Attempt to write to a read only object" ),
+    abort_code_map_t::value_type( 0x06010003, "Subindex can not be written, SI0 must be 0 for write access" ),
+    abort_code_map_t::value_type( 0x06010004, "SDO Complete access not supported for variable length objects" ),
+    abort_code_map_t::value_type( 0x06010005, "Object length exceeds mailbox size" ),
+    abort_code_map_t::value_type( 0x06010006, "Object mapped to RxPDO, SDO download blocked" ),
+    abort_code_map_t::value_type( 0x06020000, "The object does not exist in the object directory" ),
+    abort_code_map_t::value_type( 0x06040041, "The object can not be mapped into the PDO" ),
+    abort_code_map_t::value_type( 0x06040042, "The number and length of the objects to be mapped would exceed the PDO length" ),
+    abort_code_map_t::value_type( 0x06040043, "General parameter incompatibility reason" ),
+    abort_code_map_t::value_type( 0x06040047, "General internal incompatibility in the device" ),
+    abort_code_map_t::value_type( 0x06060000, "Access failed due to a hardware error" ),
+    abort_code_map_t::value_type( 0x06070010, "Data type does not match, length of service parameter does not match" ),
+    abort_code_map_t::value_type( 0x06070012, "Data type does not match, length of service parameter too high" ),
+    abort_code_map_t::value_type( 0x06070013, "Data type does not match, length of service parameter too low" ),
+    abort_code_map_t::value_type( 0x06090011, "Subindex does not exist" ),
+    abort_code_map_t::value_type( 0x06090030, "Value range of parameter exceeded (only for write access)" ),
+    abort_code_map_t::value_type( 0x06090031, "Value of parameter written too high" ),
+    abort_code_map_t::value_type( 0x06090032, "Value of parameter written too low" ),
+    abort_code_map_t::value_type( 0x06090036, "Maximum value is less than minimum value" ),
+    abort_code_map_t::value_type( 0x08000000, "General error" ),
+    abort_code_map_t::value_type( 0x08000020, "Data cannot be transferred or stored to the application" ),
+    abort_code_map_t::value_type( 0x08000021, "Data cannot be transferred or stored to the application because of local control" ),
+    abort_code_map_t::value_type( 0x08000022, "Data cannot be transferred or stored to the application because of the present device state" ),
+    abort_code_map_t::value_type( 0x08000023, "Object dictionary dynamic generation fails or no object dictionary is present" ),
+    abort_code_map_t::value_type( 0xffffffff, "Unknown" )
+};
+
+const int num_elems = sizeof raw_abort_code / sizeof raw_abort_code[0];
+abort_code_map_t abort_code_map(raw_abort_code, raw_abort_code + num_elems);
 
 string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
     switch (dtype) {
@@ -255,7 +294,14 @@ int canopen_protocol::on_read_element(ln::service_request& req,
                     desc.data_type).c_str());
         svc.resp.value_len = strlen(svc.resp.value);
     } else {
-        svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_ELEMENT_VALUE failed!");
+        uint32_t abort_code = *(uint32_t *)&svc.resp.state;
+
+        if (abort_code_map.find(abort_code) != abort_code_map.end())      
+            svc.resp.error_message = strdup(format_string("MOD_REQUEST_CANOPEN_READ_ELEMENT_VALUE failed! %s", 
+                abort_code_map[abort_code].c_str()).c_str());
+        else 
+            svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_ELEMENT_VALUE failed!");
+
         svc.resp.error_message_len = strlen(svc.resp.error_message);
     }
 

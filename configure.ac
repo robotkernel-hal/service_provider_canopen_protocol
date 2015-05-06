@@ -43,7 +43,7 @@ AC_SUBST(SET_MAKE)
 # setup rmpm
 RMPM_ARCH
 
-if test "$rmpm_host" == "arm-angstrom-linux-gnueabi"; then
+if test "$rmpm_host" == "angstrom-armv7-gcc4.7"; then
    ARCH_CFLAGS="-DNO_RDTSC"
 fi
 AC_SUBST(ARCH_CFLAGS)
