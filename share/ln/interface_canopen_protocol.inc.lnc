@@ -11,7 +11,7 @@ defines
 interface_canopen_protocol_base: %(dirname %(dirname %(CURDIR)))
 interface_canopen_protocol_base_type: %(ifexists "%(interface_canopen_protocol_base)/lib/libinterface_canopen_protocol.so", "local_install", "rmpm_release")
 interface_canopen_protocol_libdir: %(ifeq "%(interface_canopen_protocol_base_type)", "local_install", "%(interface_canopen_protocol_base)/lib", "%(interface_canopen_protocol_base)/lib/$(ARCH)")
-add_message_definition_dir: %(interface_canopen_protocol_base)/share/message_definitions 
+add_message_definition_dir: %(interface_canopen_protocol_base)/share/ln/message_definitions 
 
 ifndef rk_interfaces: rk_interfaces: ""
 rk_interfaces: %(rk_interfaces):%(interface_canopen_protocol_libdir)
