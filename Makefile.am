@@ -15,7 +15,7 @@ libinterface_canopen_protocol_la_CXXFLAGS = -fno-strict-aliasing \
 
 libinterface_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-VPATH = $(srcdir):$(srcdir)/share/message_definitions
+VPATH = $(srcdir):$(srcdir)/share/ln/message_definitions
 
 LN_MESSAGES = robotkernel/canopen_protocol/read_object \
 			  robotkernel/canopen_protocol/read_element \
