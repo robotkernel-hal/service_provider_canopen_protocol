@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([interface_canopen_protocol], [3.1.2], [robert.burger@dlr.de])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AC_INIT([interface_canopen_protocol], [3.1.3], [robert.burger@dlr.de])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -12,6 +12,8 @@ if test -n "$SOURCE_ENV"; then
    echo "loading $SOURCE_ENV"
    source $SOURCE_ENV
 fi
+
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -43,7 +45,7 @@ AC_SUBST(SET_MAKE)
 # setup rmpm
 RMPM_ARCH
 
-if test "$rmpm_host" == "angstrom-armv7-gcc4.7"; then
+if test "$rmpm_host" == "arm-angstrom-linux-gnueabi"; then
    ARCH_CFLAGS="-DNO_RDTSC"
 fi
 AC_SUBST(ARCH_CFLAGS)
@@ -51,11 +53,9 @@ AC_SUBST(ARCH_CFLAGS)
 PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel], [], [
                     RMPM_CHECK_MODULES([ROBOTKERNEL], [robotkernel.robotkernel])
                    ])
-LN_BASE=$(env -i "$srcdir"/scripts/get_ln_base.py $ROBOTKERNEL_DEPENDS)
+LN_BASE=$(env -i "$srcdir"/scripts/get_ln_base.py $ROBOTKERNEL_C_DEPENDS)
 LN_GENERATE_ARGS='-md_dir $(srcdir)/share/ln/message_definitions'
 LN_GENERATE="env -i $LN_BASE/scripts/ln_generate $LN_GENERATE_ARGS"
-
-AC_SUBST(LN_BASE)
 AC_SUBST(LN_GENERATE)
 
 AC_DEFINE_UNQUOTED(BUILD_DATE,"`date -u`",[Date (usually date of extraction from SVN).])
