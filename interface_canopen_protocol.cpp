@@ -184,12 +184,12 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
         case ECT_INTEGER64:
             return format_string("%lld", *(int64_t *)usdo); 
         case ECT_UNSIGNED8:
-            return format_string("0x%02X", *(uint8_t *)usdo); 
+            return format_string("%u", *(uint8_t *)usdo); 
         case ECT_UNSIGNED16:
-            return format_string("0x%04X", *(uint16_t *)usdo); 
+            return format_string("%u", *(uint16_t *)usdo); 
         case ECT_UNSIGNED32:
         case ECT_UNSIGNED24:
-            return format_string("0x%08X", *(uint32_t *)usdo); 
+            return format_string("%u", *(uint32_t *)usdo); 
         case ECT_UNSIGNED64:
             return format_string("%llu", *(uint64_t *)usdo); 
         case ECT_REAL32:
