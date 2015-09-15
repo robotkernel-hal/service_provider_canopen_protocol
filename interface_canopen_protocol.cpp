@@ -29,18 +29,12 @@
 #include "interface_canopen_protocol.h"
 #include "robotkernel/kernel.h"
 #include "robotkernel/exceptions.h"
-#undef BUILD_DATE
-#undef PACKAGE
-#undef PACKAGE_NAME
-#undef PACKAGE_STRING
-#undef PACKAGE_TARNAME
-#undef PACKAGE_VERSION
-#undef VERSION
-#include "config.h"
+
+INTERFACE_DEF(canopen_protocol, interface_canopen_protocol::canopen_protocol)
 
 using namespace std;
 using namespace robotkernel;
-using namespace interface;
+using namespace interface_canopen_protocol;
 
 /** Ethercat data types */
 typedef enum {
@@ -226,20 +220,17 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
 
 //! default construction
 /*!
- * \param mod_name module name to register for
- * \param dev_name device name for service
- * \param slave_id slave id to send requests to
+ * \param node configuration node
  */
-canopen_protocol::canopen_protocol(const std::string& mod_name, 
-        const std::string& dev_name, const int& slave_id) 
-    : _mod_name(mod_name), _dev_name(dev_name), _slave_id(slave_id) {
+canopen_protocol::canopen_protocol(const YAML::Node& node) 
+    : interface_base("canopen_protocol", node) {
     kernel& k = *kernel::get_instance();
     if (!k.clnt)
         throw robotkernel::str_exception("[interface_sercos_protocol|%s] "
                 "no ln_connection!\n", mod_name.c_str());
 
     stringstream base;
-    base << k.clnt->name << "." << _mod_name << "." << _dev_name << ".";
+    base << k.clnt->name << "." << mod_name << "." << dev_name << ".";
 
     register_read_element(k.clnt, base.str() + "canopen_protocol.read_element");
     register_read_object(k.clnt, base.str() + "canopen_protocol.read_object");
@@ -253,7 +244,7 @@ int canopen_protocol::on_read_element(ln::service_request& req,
         ln_service_robotkernel_canopen_protocol_read_element& svc) {
     canopen_element_description desc;
     memset(&desc, 0, sizeof(desc));
-    desc.slave_id   = _slave_id;
+    desc.slave_id   = slave_id;
     desc.index      = svc.req.index;
     desc.sub_index  = svc.req.sub_index;
 
@@ -262,7 +253,7 @@ int canopen_protocol::on_read_element(ln::service_request& req,
     svc.resp.error_message_len = 0;
     
     // execute module request read element description
-    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+    svc.resp.state = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC, (void *)&desc);
 
     if (svc.resp.state == 0) {
@@ -279,14 +270,14 @@ int canopen_protocol::on_read_element(ln::service_request& req,
     }
     
     canopen_element_value value;
-    value.slave_id  = _slave_id;
+    value.slave_id  = slave_id;
     value.index     = svc.req.index;
     value.sub_index = svc.req.sub_index;
     value.value_len = (desc.bit_length + 7) / 8;
     value.value     = new uint8_t[value.value_len]();
     
     // execute module request read element value
-    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+    svc.resp.state = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_VALUE, (void *)&value);
 
     if (svc.resp.state == 0) {
@@ -325,7 +316,7 @@ int canopen_protocol::on_read_object(ln::service_request& req,
         ln_service_robotkernel_canopen_protocol_read_object& svc) {
     canopen_object_description desc;
     memset(&desc, 0, sizeof(desc));
-    desc.slave_id = _slave_id;
+    desc.slave_id = slave_id;
     desc.index = svc.req.index;
 
     // reset error message
@@ -333,7 +324,7 @@ int canopen_protocol::on_read_object(ln::service_request& req,
     svc.resp.error_message_len = 0;
     
     // execute request
-    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+    svc.resp.state = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_OBJECT_DESC, (void *)&desc);
 
     if (svc.resp.state == 0) {
@@ -359,7 +350,7 @@ int canopen_protocol::on_write_element(ln::service_request& req,
         ln_service_robotkernel_canopen_protocol_write_element& svc) {
     canopen_element_description desc;
     memset(&desc, 0, sizeof(desc));
-    desc.slave_id   = _slave_id;
+    desc.slave_id   = slave_id;
     desc.index      = svc.req.index;
     desc.sub_index  = svc.req.sub_index;
     
@@ -368,7 +359,7 @@ int canopen_protocol::on_write_element(ln::service_request& req,
     svc.resp.error_message_len = 0;    
     
     // execute procedure command    
-    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+    svc.resp.state = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC, (void *)&desc);
 
     if (svc.resp.state != 0) {
@@ -384,7 +375,7 @@ int canopen_protocol::on_write_element(ln::service_request& req,
     }
 
     canopen_element_value value;
-    value.slave_id  = _slave_id;
+    value.slave_id  = slave_id;
     value.index     = svc.req.index;
     value.sub_index = svc.req.sub_index;
     value.value_len = (desc.bit_length + 7) / 8;
@@ -522,7 +513,7 @@ int canopen_protocol::on_write_element(ln::service_request& req,
 
     if (!abort) {
         // execute procedure command    
-        svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+        svc.resp.state = kernel::request_cb(mod_name.c_str(), 
                 MOD_REQUEST_CANOPEN_WRITE_ELEMENT_VALUE, (void *)&value);
 
         if (svc.resp.state != 0) {
@@ -550,7 +541,7 @@ int canopen_protocol::on_write_element(ln::service_request& req,
 int canopen_protocol::on_object_dictionary_list(ln::service_request& req, 
         ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc) {
     canopen_object_dictionary_list list;
-    list.slave_id = _slave_id;
+    list.slave_id = slave_id;
     list.indices_cnt = 0;
     list.indices = NULL;
     
@@ -559,7 +550,7 @@ int canopen_protocol::on_object_dictionary_list(ln::service_request& req,
     svc.resp.error_message_len = 0; 
 
     // receive cnt first
-    svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+    svc.resp.state = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST, (void *)&list);
 
     if (svc.resp.state == 0) {
@@ -569,7 +560,7 @@ int canopen_protocol::on_object_dictionary_list(ln::service_request& req,
             // now allocate buffer and receive index list
             list.indices = new uint16_t[list.indices_cnt];
 
-            svc.resp.state = kernel::request_cb(_mod_name.c_str(), 
+            svc.resp.state = kernel::request_cb(mod_name.c_str(), 
                     MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST, (void *)&list);
         
             if (svc.resp.state == 0)
@@ -593,58 +584,4 @@ int canopen_protocol::on_object_dictionary_list(ln::service_request& req,
 
     return 0;
 }
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-#if 0
-}
-#endif
-
-//! interface register
-/*!
- * \param mod_name module name to register
- * \return interface handle
- */
-INTERFACE_HANDLE intf_register(const char *mod_name, const char *dev_name, int slave_id) {
-    canopen_protocol *s = NULL;
-
-    klog(interface_info, INTFNAME "%s: build by: " BUILD_USER "@" BUILD_HOST "\n", mod_name);
-    klog(interface_info, INTFNAME "%s: build date: " BUILD_DATE "\n", mod_name);
-
-    // parsing sercos ring configuration
-    try {
-        s = new canopen_protocol(string(mod_name), string(dev_name), slave_id);
-    } catch(exception& e) {
-        klog(interface_error, INTFNAME "%s: error constructing intercae:\n%s", mod_name, e.what());
-        goto ErrorExit;
-    }
-
-    return (INTERFACE_HANDLE)s;
-
-ErrorExit:
-    if (s)
-        delete s;
-
-    return (INTERFACE_HANDLE)NULL;
-}
-
-//! interface unregister
-/*!
- * \param hdl interface handle
- */
-void intf_unregister(INTERFACE_HANDLE hdl) {
-    // cast struct
-    canopen_protocol *s = (canopen_protocol *)hdl;
-
-    if (s)
-        delete s;
-}
-
-#if 0
-{
-#endif
-#ifdef __cplusplus
-}
-#endif
 

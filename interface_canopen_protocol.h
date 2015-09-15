@@ -28,34 +28,27 @@
 #define __INTERFACE_CANOPEN_PROTOCOL_H__
 
 #include "module_intf.h"
+#include "robotkernel/interface_base.h"
 
 #define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
 #include "ln_messages.h"
 #undef LN_UNREGISTER_SERVICE_IN_BASE_DETOR
 
-#define INTFNAME "[interface_canopen_protocol] "
-
-namespace interface {
+namespace interface_canopen_protocol {
     
 class canopen_protocol : 
+    public robotkernel::interface_base,
     public ln_service_read_element_base,
     public ln_service_read_object_base,
     public ln_service_write_element_base,
     public ln_service_object_dictionary_list_base
 {
-    std::string _mod_name;  //! request module name
-    std::string _dev_name;  //! service device name
-    int _slave_id;          //! request slave id
-
     public:
         //! default construction
         /*!
-         * \param mod_name module name to send requests to
-         * \param dev_name device name for service
-         * \param slave_id slave id to send requests to
+         * \param node configuration node
          */
-        canopen_protocol(const std::string& mod_name, 
-                const std::string& dev_name, const int& slave_id);
+        canopen_protocol(const YAML::Node& node);
 
         //! service callback read element
         int on_read_element(ln::service_request& req,
