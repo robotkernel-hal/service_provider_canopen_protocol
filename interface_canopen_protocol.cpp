@@ -386,17 +386,18 @@ int canopen_protocol::on_write_element(ln::service_request& req,
     py_int *pintval     = dynamic_cast<py_int *>(pval);
     py_long *plongval   = dynamic_cast<py_long *>(pval);
     py_float *pfloatval = dynamic_cast<py_float *>(pval);
+    py_special *pspval  = dynamic_cast<py_special *>(pval);
 
     bool abort = false;
 
     switch (desc.data_type) {
         case ECT_BOOLEAN:
-            if (!pintval) {
+            if (!pspval) {
                 abort = true;
                 break;
             }
 
-            (*(uint8_t *)value.value) = (bool)*pintval;
+            (*(uint8_t *)value.value) = (bool)*pspval;
             break;
         case ECT_INTEGER8:
             if (!pintval) {
@@ -473,20 +474,32 @@ int canopen_protocol::on_write_element(ln::service_request& req,
             break;
         }
         case ECT_REAL32:
-            if (!pfloatval) {
-                abort = true;
+            if (pfloatval) {
+                (*(float *)value.value) = (float)*pfloatval;
+                break;
+            } else if (pintval) {
+                (*(float *)value.value) = (float)*pintval;
+                break;
+            } else if (plongval) {
+                (*(float *)value.value) = (float)*plongval;
                 break;
             }
 
-            (*(float *)value.value) = (float)*pfloatval;
+            abort = true;
             break;
         case ECT_REAL64:
-            if (!pfloatval) {
-                abort = true;
+            if (pfloatval) {
+                (*(float *)value.value) = (float)*pfloatval;
+                break;
+            } else if (pintval) {
+                (*(float *)value.value) = (float)*pintval;
+                break;
+            } else if (plongval) {
+                (*(float *)value.value) = (float)*plongval;
                 break;
             }
 
-            (*(double *)value.value) = (double)*pfloatval;
+            abort = true;
             break;
         case ECT_BIT1:
         case ECT_BIT2:
@@ -497,13 +510,27 @@ int canopen_protocol::on_write_element(ln::service_request& req,
         case ECT_BIT7:
         case ECT_BIT8:
         case ECT_VISIBLE_STRING:
-        case ECT_OCTET_STRING:
             abort = true;
 
             svc.resp.error_message = strdup(format_string("not implemented data_type: %s\n", 
                     data_type_to_string(desc.data_type).c_str()).c_str());
             svc.resp.error_message_len = strlen(svc.resp.error_message);
             break;
+        case ECT_OCTET_STRING: {
+            py_list *plist  = dynamic_cast<py_list *>(pval);
+            if (!plist) {
+                log(warning, "pylist is null on OCTET_STRING\n");
+                break;
+            }
+            int num = 0;
+            for (py_list_value_t::iterator it = plist->value.begin();
+                    it != plist->value.end(); ++it) {
+                py_long *plongval2     = dynamic_cast<py_long *>(*it);
+                py_int *pintval2     = dynamic_cast<py_int *>(*it);
+                value.value[num++] = (int)*pintval2;
+            }
+            break;
+        }
         default:
             break;
     }
