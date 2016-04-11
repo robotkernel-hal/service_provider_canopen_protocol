@@ -261,7 +261,8 @@ int canopen_protocol::on_read_element(ln::service_request& req,
 
     if (svc.resp.state == 0) {
         if (desc.name && desc.name_len) {
-            svc.resp.name       = strndup(desc.name, desc.name_len);
+            svc.resp.name       = (char *)malloc(desc.name_len + 1);
+            strncpy(svc.resp.name, desc.name, desc.name_len);
             svc.resp.name_len   = desc.name_len;
             free(desc.name);
         }
@@ -340,7 +341,8 @@ int canopen_protocol::on_read_object(ln::service_request& req,
         svc.resp.max_subindices = desc.max_subindices;
         
         if (desc.name && desc.name_len) {
-            svc.resp.name       = strndup(desc.name, desc.name_len);
+            svc.resp.name       = (char *)malloc(desc.name_len + 1);
+            strncpy(svc.resp.name, desc.name, desc.name_len);
             svc.resp.name_len   = desc.name_len;
             free(desc.name);
         }
