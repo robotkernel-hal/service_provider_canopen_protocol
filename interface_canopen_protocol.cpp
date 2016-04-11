@@ -24,6 +24,7 @@
  * along with robotkernel.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
 #include <string_util/string_util.h>
 
 #include "interface_canopen_protocol.h"
@@ -247,6 +248,8 @@ int canopen_protocol::on_read_element(ln::service_request& req,
     desc.slave_id   = slave_id;
     desc.index      = svc.req.index;
     desc.sub_index  = svc.req.sub_index;
+    desc.name       = NULL;
+    desc.name_len   = 0;
 
     // reset error message
     svc.resp.error_message = NULL;
@@ -257,8 +260,12 @@ int canopen_protocol::on_read_element(ln::service_request& req,
             MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC, (void *)&desc);
 
     if (svc.resp.state == 0) {
-        svc.resp.name       = strdup(desc.name);
-        svc.resp.name_len   = strlen(svc.resp.name);
+        if (desc.name && desc.name_len) {
+            svc.resp.name       = strndup(desc.name, desc.name_len);
+            svc.resp.name_len   = desc.name_len;
+            free(desc.name);
+        }
+
         svc.resp.value_info = desc.value_info;
         svc.resp.data_type  = desc.data_type;
         svc.resp.bit_length = desc.bit_length;
@@ -331,8 +338,12 @@ int canopen_protocol::on_read_object(ln::service_request& req,
         svc.resp.data_type      = desc.data_type;
         svc.resp.objcode        = desc.object_code;
         svc.resp.max_subindices = desc.max_subindices;
-        svc.resp.name           = desc.name;
-        svc.resp.name_len       = strlen(desc.name);
+        
+        if (desc.name && desc.name_len) {
+            svc.resp.name       = strndup(desc.name, desc.name_len);
+            svc.resp.name_len   = desc.name_len;
+            free(desc.name);
+        }
     } else {
         svc.resp.error_message = strdup("MOD_REQUEST_CANOPEN_READ_OBJECT_DESC failed!");
         svc.resp.error_message_len = strlen(svc.resp.error_message);

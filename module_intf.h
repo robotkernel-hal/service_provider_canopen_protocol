@@ -51,7 +51,9 @@ typedef struct canopen_object_description {
     uint16_t data_type;             //! [out]    datatype
     uint8_t  object_code;           //! [out]    object code
     uint8_t  max_subindices;        //! [out]    maximum number of subindices
-    char     name[CANOPEN_MAXNAME]; //! [out]    object name
+    int      name_len;              //! [out]    length of name
+    char    *name;                  //! [out]    object name, allocated by callee
+                                    //           must be freed by caller
 } canopen_object_description_t;
 
 #define MOD_REQUEST_CANOPEN_READ_OBJECT_DESC        \
@@ -67,7 +69,9 @@ typedef struct canopen_element_description {
     uint16_t data_type;             //! [out]    element data type
     uint16_t bit_length;            //! [out]    length in bits
     uint16_t obj_access;            //! [out]    object access
-    char     name[CANOPEN_MAXNAME]; //! [out]    element name
+    int      name_len;              //! [out]    length of name
+    char    *name;                  //! [out]    element name, allocated by callee
+                                    //           must be freed by caller
 } canopen_element_description_t;
 
 #define MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC       \
