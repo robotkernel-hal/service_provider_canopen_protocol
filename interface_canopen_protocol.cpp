@@ -244,7 +244,9 @@ canopen_protocol::canopen_protocol(const YAML::Node& node)
 int canopen_protocol::on_read_element(ln::service_request& req, 
         ln_service_robotkernel_canopen_protocol_read_element& svc) {
     canopen_element_description desc;
+    canopen_element_value value;
     memset(&desc, 0, sizeof(desc));
+    memset(&value, 0, sizeof(value));
     desc.slave_id   = slave_id;
     desc.index      = svc.req.index;
     desc.sub_index  = svc.req.sub_index;
@@ -277,7 +279,6 @@ int canopen_protocol::on_read_element(ln::service_request& req,
         goto Exit;
     }
     
-    canopen_element_value value;
     value.slave_id  = slave_id;
     value.index     = svc.req.index;
     value.sub_index = svc.req.sub_index;

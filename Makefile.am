@@ -11,7 +11,8 @@ libinterface_canopen_protocol_la_CXXFLAGS = -fno-strict-aliasing \
 											-Wall \
 											-I$(top_srcdir)/src \
 											-I$(top_builddir) \
-											@ROBOTKERNEL_CFLAGS@ 
+											@ROBOTKERNEL_CFLAGS@ \
+								 			@LIBSTRING_UTIL_CFLAGS@
 
 libinterface_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 

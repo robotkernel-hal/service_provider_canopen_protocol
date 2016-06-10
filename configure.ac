@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([interface_canopen_protocol], [4.0.2], [robert.burger@dlr.de])
+AC_INIT([interface_canopen_protocol], [4.0.3], [robert.burger@dlr.de])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -52,6 +52,9 @@ AC_SUBST(ARCH_CFLAGS)
 
 PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel], [], [
                     RMPM_CHECK_MODULES([ROBOTKERNEL], [robotkernel.robotkernel])
+                   ])
+PKG_CHECK_MODULES([LIBSTRING_UTIL], [libstring_util], [], [
+                    RMPM_CHECK_MODULES([LIBSTRING_UTIL], [software.libstring_util])
                    ])
 LN_BASE=$(env -i "$srcdir"/scripts/get_ln_base.py $ROBOTKERNEL_C_DEPENDS)
 LN_GENERATE_ARGS='-md_dir $(srcdir)/share/ln/message_definitions'
