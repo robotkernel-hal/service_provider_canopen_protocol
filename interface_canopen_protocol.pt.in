@@ -1,8 +1,8 @@
 PTVERSION           = 2
 NAME                = @PACKAGE@
-VERSION             = @PACKAGE_VERSION@
+VERSION             = @VERSION@
 DESCRIPTION         = robotkernel @PACKAGE@
-MAINTAINER          = Robert Burger <robert.burger@dlr.de>
+MAINTAINER          = @MAINTAINER@
 DOCUMENTATION       = https://rmintra01.robotic.dlr.de/wiki/Robotkernel/interface_canopen_protocol 
 ARCHS               = @ARCHS@
 SUPPORTED_LANGUAGES = C
@@ -14,5 +14,5 @@ C_LIBS              =
 build/${ARCH}/install/lib => lib/${ARCH}
 doc/ => doc/
 share/ => share/
-*.h => include/@PACKAGE@/
+src/main/cpp/*.h => include/@PACKAGE@/
 
