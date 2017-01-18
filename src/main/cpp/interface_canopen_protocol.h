@@ -30,19 +30,9 @@
 #include "module_intf.h"
 #include "robotkernel/interface_base.h"
 
-#define LN_UNREGISTER_SERVICE_IN_BASE_DETOR  
-#include "ln_messages.h"
-#undef LN_UNREGISTER_SERVICE_IN_BASE_DETOR
-
 namespace interface_canopen_protocol {
     
-class canopen_protocol : 
-    public robotkernel::interface_base,
-    public ln_service_read_element_base,
-    public ln_service_read_object_base,
-    public ln_service_write_element_base,
-    public ln_service_object_dictionary_list_base
-{
+class canopen_protocol : robotkernel::interface_base {
     public:
         //! default construction
         /*!
@@ -51,17 +41,37 @@ class canopen_protocol :
         canopen_protocol(const YAML::Node& node);
 
         //! service callback read element
-        int on_read_element(ln::service_request& req,
-                ln_service_robotkernel_canopen_protocol_read_element& svc);
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_read_element(YAML::Node& message);
+        static const std::string service_definition_read_element;
+
         //! service callback read object
-        int on_read_object(ln::service_request& req,
-                ln_service_robotkernel_canopen_protocol_read_object& svc);
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_read_object(YAML::Node& message);
+        static const std::string service_definition_read_object;
+
         //! service callback write element
-        int on_write_element(ln::service_request& req,
-                ln_service_robotkernel_canopen_protocol_write_element& svc);
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_write_element(YAML::Node& message);
+        static const std::string service_definition_write_element;
+
         //! service callback list object dictionary
-        int on_object_dictionary_list(ln::service_request& req,
-                ln_service_robotkernel_canopen_protocol_object_dictionary_list& svc);
+        /*!
+         * \param message service message
+         * \return success
+         */
+        int service_object_dictionary_list(YAML::Node& message);
+        static const std::string service_definition_object_dictionary_list;
+
 };
 
 } // namespace interface
