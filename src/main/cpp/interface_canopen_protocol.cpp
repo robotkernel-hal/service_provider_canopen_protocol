@@ -244,8 +244,6 @@ canopen_protocol::canopen_protocol(const YAML::Node& node)
             service_definition_object_dictionary_list,
             boost::bind(&canopen_protocol::service_object_dictionary_list, 
                 this, _1));
-
-//    register_write_element(k.clnt, base.str() + "canopen_protocol.write_element");
 }
 
 //! service callback read element
@@ -601,11 +599,11 @@ int canopen_protocol::service_write_element(YAML::Node& message) {
 }
 
 const std::string canopen_protocol::service_definition_write_element =
-    "request\n"
+    "request:\n"
     "   uint16_t: index\n"
     "   uint8_t: sub_index\n"
     "   string: value\n"
-    "response\n"
+    "response:\n"
     "   int32_t: state\n"
     "   string: error_message\n";
 
