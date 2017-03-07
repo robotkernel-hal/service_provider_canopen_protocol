@@ -7,8 +7,8 @@ CLEANFILES = ln_messages.h
 
 libinterface_canopen_protocol_la_SOURCES  = interface_canopen_protocol.cpp
 
-libinterface_canopen_protocol_la_CXXFLAGS = -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
-                                            @ROBOTKERNEL_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@ @YAML_CPP_CFLAGS@
+libinterface_canopen_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
+                                            @ROBOTKERNEL_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@ @YAML_CPP_RMC_CFLAGS@
 
 libinterface_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
