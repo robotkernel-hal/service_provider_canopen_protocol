@@ -40,35 +40,15 @@ namespace interface_canopen_protocol {
 	// forward declaration
 	class canopen_protocol_handler;
 
-	class canopen_protocol : robotkernel::service_provider_base<canopen_protocol_handler> {
+	class canopen_protocol : 
+		public robotkernel::service_provider_base<canopen_protocol_handler> {
 		public:
 			//! default construction
 			/*!
 			 * \param node configuration node
 			 */
-			canopen_protocol();
-
-			//! add slave
-			/*!
-			 * \param mod_name slave owning module
-			 * \param dev_name name of device
-			 * \param slave_id id in module
-			 * \return slv_hdl slave handle
-			 */
-			void add_slave(const char *mod_name, const char *dev_name, int slave_id);
-
-			//! remove registered slave
-			/*!
-			 * \param mod_name slave owning module
-			 * \param slave_id id in module
-			 */
-			void remove_slave(const char *mod_name, int slave_id);
-
-			//! remove all slaves from module
-			/*!
-			 * \param mod_name module owning slaves
-			 */
-			void remove_module(const char *mod_name);
+			canopen_protocol() 
+				: service_provider_base("canopen_protocol") {};
 
 			//! service provider magic 
 			/*!

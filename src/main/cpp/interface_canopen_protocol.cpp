@@ -217,63 +217,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
 } 
 	
 const char* interface_canopen_protocol::canopen_protocol_sp_magic = "canopen_protocol";
-
-//! default construction
-/*!
- * \param node configuration node
- */
-canopen_protocol::canopen_protocol()
-    : service_provider_base("canopen_protocol") {
-}
-			
-//! add slave
-/*!
- * \param mod_name slave owning module
- * \param dev_name name of device
- * \param slave_id id in module
- */
-void canopen_protocol::add_slave(
-		const char *mod_name, const char *dev_name, int slave_id) {
-	canopen_protocol_handler *handler = new canopen_protocol_handler(
-			string(mod_name), string(dev_name), slave_id);
-
-	handler_map[make_pair(string(mod_name), slave_id)] = handler;
-}
 	
-//! remove registered slave
-/*!
- * \param mod_name slave owning module
- * \param slave_id id in module
- */
-void canopen_protocol::remove_slave(const char *mod_name, int slave_id) {
-	for (std::map<std::pair<std::string, int>, canopen_protocol_handler *>::iterator it =
-			handler_map.begin(); it != handler_map.end(); ++it) {
-		if (it->first.first != string(mod_name))
-			continue; // skip this, not owr module
-
-		if (it->first.second != slave_id) 
-			continue; // skip this, not owr slave
-
-		delete it->second;
-		it = handler_map.erase(it);
-	}
-}
-
-//! remove all slaves from module
-/*!
- * \param mod_name module owning slaves
- */
-void canopen_protocol::remove_module(const char *mod_name) {
-	for (std::map<std::pair<std::string, int>, canopen_protocol_handler *>::iterator it =
-			handler_map.begin(); it != handler_map.end(); ++it) {
-		if (it->first.first != string(mod_name))
-			continue; // skip this, not owr module
-
-		delete it->second;
-		it = handler_map.erase(it);
-	}
-}
-
 canopen_protocol_handler::canopen_protocol_handler(std::string mod_name, std::string dev_name, 
 		int slave_id) : log_base(mod_name, "canopen_protocol"), mod_name(mod_name), dev_name(dev_name), slave_id(slave_id) {
 	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
