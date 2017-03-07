@@ -76,9 +76,6 @@ namespace interface_canopen_protocol {
 			 */
 			const char* get_sp_magic() 
 			{ return canopen_protocol_sp_magic; };
-	
-			//! hold all created handlers, so we can remove them by name
-			std::map<std::pair<std::string, int>, canopen_protocol_handler *> handler_map;
 	};
 
 	class canopen_protocol_handler : public robotkernel::log_base {
