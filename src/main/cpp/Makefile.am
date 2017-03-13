@@ -5,9 +5,13 @@ lib_LTLIBRARIES = libinterface_canopen_protocol.la
 BUILT_SOURCES = ln_messages.h
 CLEANFILES = ln_messages.h
 
+pkginclude_HEADERS = interface_canopen_protocol.h module_intf.h 
+extraincludedir = $(includedir)/service_provider/canopen_protocol
+extrainclude_HEADERS = include/service_provider/canopen_protocol/base.h
+
 libinterface_canopen_protocol_la_SOURCES  = interface_canopen_protocol.cpp
 
-libinterface_canopen_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) \
+libinterface_canopen_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-aliasing -Wall -I$(srcdir) -I$(builddir) -I$(srcdir)/include \
                                             @ROBOTKERNEL_CFLAGS@ @LIBSTRING_UTIL_CFLAGS@ @YAML_CPP_RMC_CFLAGS@
 
 libinterface_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)

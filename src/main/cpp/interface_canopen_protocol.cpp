@@ -219,7 +219,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
 const char* interface_canopen_protocol::canopen_protocol_sp_magic = "canopen_protocol";
 	
 canopen_protocol_handler::canopen_protocol_handler(std::string mod_name, std::string dev_name, 
-		int slave_id) : log_base(mod_name, "canopen_protocol"), mod_name(mod_name), dev_name(dev_name), slave_id(slave_id) {
+		int slave_id) : log_base("canopen_protocol", mod_name + "." + dev_name + ".canopen_protocol"), mod_name(mod_name), dev_name(dev_name), slave_id(slave_id) {
 	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
 	std::stringstream base;
@@ -286,6 +286,12 @@ int canopen_protocol_handler::service_read_element(
     string resp_value       = "";
     string error_message    = "";
     
+    uint16_t index = request[READ_ELEMENT_REQ_INDEX];
+    uint8_t sub_index = request[READ_ELEMENT_REQ_SUB_INDEX];
+
+    service_provider::canopen_protocol::element_description_t elem_desc;            
+    instance->get_element_description(index, sub_index, elem_desc);
+
     // execute module request read element description
     state = kernel::request_cb(mod_name.c_str(), 
             MOD_REQUEST_CANOPEN_READ_ELEMENT_DESC, (void *)&desc);
@@ -346,6 +352,7 @@ func_exit:
 #define READ_ELEMENT_RESP_OBJ_ACCESS    5
 #define READ_ELEMENT_RESP_VALUE         6
 #define READ_ELEMENT_RESP_ERROR_MESSAGE 7
+	response.resize(8);
     response[READ_ELEMENT_RESP_STATE]           = state;
     response[READ_ELEMENT_RESP_NAME]            = name;
     response[READ_ELEMENT_RESP_VALUE_INFO]      = value_info;
@@ -690,6 +697,7 @@ int canopen_protocol_handler::service_object_dictionary_list(
     // default response values
     int64_t state = 0;
     std::vector<uint16_t> indices;
+    std::vector<rk_type> indices_resp;
     string error_message = "";
 
     // receive cnt first
@@ -707,7 +715,9 @@ int canopen_protocol_handler::service_object_dictionary_list(
         
             if (state != 0) {
                 error_message = "MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST failed!";
-            }
+            } else {
+				indices_resp.assign(indices.begin(), indices.end());
+			}
         }
     } else {
         error_message = "MOD_REQUEST_CANOPEN_OBJECT_DICTIONARY_LIST failed!";
@@ -718,7 +728,7 @@ int canopen_protocol_handler::service_object_dictionary_list(
 #define OBJECT_DICTIONARY_LIST_ERROR_MESSAGE    2
     response.resize(3);
     response[OBJECT_DICTIONARY_LIST_RESP_STATE]     = state;
-    response[OBJECT_DICTIONARY_LIST_RESP_INDICES]   = indices;
+    response[OBJECT_DICTIONARY_LIST_RESP_INDICES]   = indices_resp;
     response[OBJECT_DICTIONARY_LIST_ERROR_MESSAGE]  = error_message;
 
     return 0;

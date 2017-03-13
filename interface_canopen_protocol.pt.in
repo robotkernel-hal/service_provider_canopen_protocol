@@ -15,4 +15,5 @@ build/${ARCH}/install/lib => lib/${ARCH}
 doc/ => doc/
 share/ => share/
 src/main/cpp/*.h => include/@PACKAGE@/
+src/main/cpp/include/ => include/robotkernel/
 

@@ -34,6 +34,8 @@
 #include "robotkernel/kernel.h"
 #include "robotkernel/log_base.h"
 
+#include "service_provider/canopen_protocol/base.h"
+
 namespace interface_canopen_protocol {
 	extern const char* canopen_protocol_sp_magic;
 
@@ -60,6 +62,7 @@ namespace interface_canopen_protocol {
 
 	class canopen_protocol_handler : public robotkernel::log_base {
 		public:
+            service_provider::canopen_protocol::base *instance;
 			std::string mod_name;	//!< slave owner module
 			std::string dev_name;	//!< service device name
 			int slave_id;			//!< slave identifier
