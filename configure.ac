@@ -45,9 +45,10 @@ fi
 AC_SUBST(SET_MAKE)
 
 # setup rmpm
-RMPM_ARCH
-m4_esyscmd([scripts/m4_deps.py])
-RM_FIND_LN_FROM_ENV
+
+PKG_CHECK_MODULES([YAML_CPP], [yaml-cpp], [], [])
+PKG_CHECK_MODULES([LIBSTRING_UTIL], [libstring_util], [], [])
+PKG_CHECK_MODULES([ROBOTKERNEL], [robotkernel], [], [])
 
 AC_DEFINE_UNQUOTED(BUILD_DATE,"`date -u`",[Date (usually date of extraction from SVN).])
 AC_DEFINE_UNQUOTED(BUILD_USER,"`whoami`",[User (usually user logged in on shell).])

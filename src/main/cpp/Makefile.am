@@ -1,4 +1,4 @@
-ACLOCAL_AMFLAGS = -I m4 -I scripts/m4
+ACLOCAL_AMFLAGS = -I m4
 
 libdir = $(prefix)/lib
 lib_LTLIBRARIES = libservice_provider_canopen_protocol.la
@@ -11,6 +11,6 @@ libservice_provider_canopen_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-alias
 												   -I$(srcdir) -I$(builddir) -I$(srcdir)/include 	\
 												   @ROBOTKERNEL_CFLAGS@ 							\
 												   @LIBSTRING_UTIL_CFLAGS@ 							\
-												   @YAML_CPP_RMC_CFLAGS@
+												   @YAML_CPP_CFLAGS@
 libservice_provider_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
