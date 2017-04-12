@@ -7,3 +7,5 @@ This supplies a service provider for all robotkernel modules with support for ca
 - get element description: returns the description of one element of an id
 - read element: reads one element value of an id
 - write element: wristes one element value of an id
+
+All of these services will be available through a robotkernel brigdge (e.g. bridge_ln, bridge_jsonrpc, bridge_cli, ...)
