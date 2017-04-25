@@ -160,7 +160,17 @@ abort_code_map_t abort_code_map = {
     { 0x08000023, "Object dictionary dynamic generation fails or no object dictionary is present" },
     { 0xffffffff, "Unknown" } };
 
-string value_2_string(uint8_t *usdo, int l, uint16_t dtype) {
+string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
+    if (    (   ((index & 0x1600) == 0x1600) ||
+                ((index & 0x1A00) == 0x1A00)) &&
+            ( dtype == ECT_UNSIGNED32))
+        return format_string("0x%08X", *(uint32_t *)usdo);
+
+    if (    (   ( index           == 0x1C12) ||
+                ( index           == 0x1C13)) &&
+            ( dtype == ECT_UNSIGNED16))
+        return format_string("0x%04X", *(uint16_t *)usdo);
+
     switch (dtype) {
         case ECT_BOOLEAN:
             if (*(uint8_t *)usdo)
@@ -280,19 +290,19 @@ int canopen_protocol::handler::service_read_element(
         // decode data
         if (elem_desc.default_value.size() > 0)
             default_value = value_2_string(&elem_desc.default_value[0], 
-                    elem_desc.default_value.size(), elem_desc.data_type);
+                    elem_desc.default_value.size(), elem_desc.data_type, index);
         if (elem_desc.min_value.size() > 0)
             min_value = value_2_string(&elem_desc.min_value[0], 
-                    elem_desc.min_value.size(), elem_desc.data_type);
+                    elem_desc.min_value.size(), elem_desc.data_type, index);
         if (elem_desc.max_value.size() > 0)
             max_value = value_2_string(&elem_desc.max_value[0], 
-                    elem_desc.max_value.size(), elem_desc.data_type);
+                    elem_desc.max_value.size(), elem_desc.data_type, index);
 
         _instance->read_element(index, sub_index, value);
 
         // decode value
         resp_value = value_2_string(
-                &value[0], value.size(), elem_desc.data_type);
+                &value[0], value.size(), elem_desc.data_type, index);
     } catch (std::exception& e) {
         error_message = e.what();
     }
