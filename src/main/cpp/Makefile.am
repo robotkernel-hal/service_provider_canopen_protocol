@@ -1,6 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
 
-libdir = $(prefix)/lib
 lib_LTLIBRARIES = libservice_provider_canopen_protocol.la
 
 extraincludedir = $(includedir)/service_provider/canopen_protocol
