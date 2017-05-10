@@ -636,9 +636,7 @@ int canopen_protocol::handler::service_object_dictionary_list(
 
     try {
         _instance->get_object_dictionary_list(list);
-        log(info, "service provider got list with %d elements\n", list.size());
         indices_resp.assign(list.begin(), list.end());
-        log(info, "service provider returning list with %d elements\n", indices_resp.size());
     } catch (std::exception& e) {
         error_message = e.what();
     }
