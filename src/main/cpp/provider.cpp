@@ -227,7 +227,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
     }
 } 
 	
-canopen_protocol::handler::handler(const robotkernel::sp_service_collector_device_t& req) 
+canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
     : log_base("canopen_protocol", req->owner + "." + req->device_name + ".canopen_protocol") {
 	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
@@ -236,7 +236,7 @@ canopen_protocol::handler::handler(const robotkernel::sp_service_collector_devic
         throw str_exception("wrong base class");
 
 	std::stringstream base;
-	base << _instance->owner << "." << _instance->device_name << ".canopen_protocol.";
+	base << _instance->device_name << ".canopen_protocol.";
 
 	k.add_service(req->owner, base.str() + "read_element", 
 			service_definition_read_element,
@@ -257,12 +257,12 @@ canopen_protocol::handler::~handler() {
 	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
 	std::stringstream base;
-	base << _instance->owner << "." << _instance->device_name << ".canopen_protocol.";
+	base << _instance->device_name << ".canopen_protocol.";
 
-	k.remove_service(base.str() + "read_element");
-	k.remove_service(base.str() + "read_object");
-	k.remove_service(base.str() + "write_element");
-	k.remove_service(base.str() + "object_dictionary_list");
+	k.remove_service(_instance->owner, base.str() + "read_element");
+	k.remove_service(_instance->owner, base.str() + "read_object");
+	k.remove_service(_instance->owner, base.str() + "write_element");
+	k.remove_service(_instance->owner, base.str() + "object_dictionary_list");
 }
 
 //! service callback read element

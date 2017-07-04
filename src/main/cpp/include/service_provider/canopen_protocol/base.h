@@ -27,7 +27,7 @@
 
 #include <list>
 
-#include "robotkernel/service_collector_device.h"
+#include "robotkernel/service_interface.h"
 
 namespace service_provider {
 
@@ -60,11 +60,11 @@ namespace service_provider {
         //! read or write canopen element values
         typedef std::vector<uint8_t> element_t;
 
-        class base : public robotkernel::service_collector_device {
+        class base : public robotkernel::service_interface {
             public:
                 //! construction
                 base(std::string owner, std::string service_prefix)
-                : robotkernel::service_collector_device(owner, service_prefix) {};
+                : robotkernel::service_interface(owner, service_prefix) {};
 
                 //! destruction
                 virtual ~base() = 0;
