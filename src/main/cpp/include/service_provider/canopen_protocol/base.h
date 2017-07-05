@@ -64,7 +64,7 @@ namespace service_provider {
             public:
                 //! construction
                 base(std::string owner, std::string service_prefix)
-                : robotkernel::service_interface(owner, service_prefix) {};
+                : robotkernel::service_interface(owner, service_prefix + ".canopen_protocol") {};
 
                 //! destruction
                 virtual ~base() = 0;
