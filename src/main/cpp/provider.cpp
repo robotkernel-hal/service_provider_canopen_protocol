@@ -228,7 +228,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
 } 
 	
 canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
-    : log_base("canopen_protocol", req->owner + "." + req->device_name + ".canopen_protocol") {
+    : log_base("canopen_protocol", req->owner + "." + req->device_name) {
 	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
     _instance = std::dynamic_pointer_cast<service_provider::canopen_protocol::base>(req);
