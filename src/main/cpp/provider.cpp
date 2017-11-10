@@ -329,21 +329,21 @@ int canopen_protocol::handler::service_read_element(
 }
 
 const std::string canopen_protocol::handler::service_definition_read_element =
-    "request:\n"
-    "   uint16_t: index\n"
-    "   uint8_t: sub_index\n"
-    "response:\n"
-    "   string: name\n"
-    "   uint8_t: value_info\n"
-    "   uint16_t: data_type\n"
-    "   uint16_t: bit_length\n"
-    "   uint16_t: obj_access\n"
-    "   uint16_t: unit\n"
-    "   string: default_value\n"
-    "   string: min_value\n"
-    "   string: max_value\n"
-    "   string: value\n"
-    "   string: error_message\n";
+"request:\n"
+"- uint16_t: index\n"
+"- uint8_t: sub_index\n"
+"response:\n"
+"- string: name\n"
+"- uint8_t: value_info\n"
+"- uint16_t: data_type\n"
+"- uint16_t: bit_length\n"
+"- uint16_t: obj_access\n"
+"- uint16_t: unit\n"
+"- string: default_value\n"
+"- string: min_value\n"
+"- string: max_value\n"
+"- string: value\n"
+"- string: error_message\n";
         
 //! service callback read object
 /*!
@@ -383,14 +383,14 @@ int canopen_protocol::handler::service_read_object(const service_arglist_t& requ
 }
 
 const std::string canopen_protocol::handler::service_definition_read_object =
-    "request:\n"
-    "   uint16_t: index\n"
-    "response:\n"
-    "   uint16_t: data_type\n"
-    "   uint8_t: objcode\n"
-    "   uint8_t: max_subindices\n"
-    "   string: name\n"
-    "   string: error_message\n";
+"request:\n"
+"- uint16_t: index\n"
+"response:\n"
+"- uint16_t: data_type\n"
+"- uint8_t: objcode\n"
+"- uint8_t: max_subindices\n"
+"- string: name\n"
+"- string: error_message\n";
 
 //! service callback write element
 /*!
@@ -606,12 +606,12 @@ func_exit:
 }
 
 const std::string canopen_protocol::handler::service_definition_write_element =
-    "request:\n"
-    "   uint16_t: index\n"
-    "   uint8_t: sub_index\n"
-    "   string: value\n"
-    "response:\n"
-    "   string: error_message\n";
+"request:\n"
+"- uint16_t: index\n"
+"- uint8_t: sub_index\n"
+"- string: value\n"
+"response:\n"
+"- string: error_message\n";
 
 //! service callback list object dictionary
 /*!
@@ -644,7 +644,7 @@ int canopen_protocol::handler::service_object_dictionary_list(
 }
         
 const std::string canopen_protocol::handler::service_definition_object_dictionary_list =
-    "response:\n"
-    "   vector/uint16_t: indices\n"
-    "   string: error_message\n";
+"response:\n"
+"- vector/uint16_t: indices\n"
+"- string: error_message\n";
 
