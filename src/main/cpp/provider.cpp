@@ -226,36 +226,37 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
         }
     }
 } 
-	
+    
 canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
-    : log_base("canopen_protocol", req->owner + "." + req->device_name) {
-	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
+    : log_base(req->owner, req->device_name) 
+{
+    robotkernel::kernel& k = *robotkernel::kernel::get_instance();
 
     _instance = std::dynamic_pointer_cast<service_provider::canopen_protocol::base>(req);
     if (!_instance)
         throw str_exception("wrong base class");
 
-	k.add_service(req->owner, _instance->device_name + ".read_element", 
-			service_definition_read_element,
-			std::bind(&canopen_protocol::handler::service_read_element, this, _1, _2));
-	k.add_service(req->owner, _instance->device_name + ".read_object", 
-			service_definition_read_object,
-			std::bind(&canopen_protocol::handler::service_read_object, this, _1, _2));
-	k.add_service(req->owner, _instance->device_name + ".write_element", 
-			service_definition_write_element,
-			std::bind(&canopen_protocol::handler::service_write_element, this, _1, _2));
-	k.add_service(req->owner, _instance->device_name + ".object_dictionary_list", 
-			service_definition_object_dictionary_list,
-			std::bind(&canopen_protocol::handler::service_object_dictionary_list, 
-				this, _1, _2));
+    k.add_service(req->owner, _instance->device_name + ".read_element", 
+            service_definition_read_element,
+            std::bind(&canopen_protocol::handler::service_read_element, this, _1, _2));
+    k.add_service(req->owner, _instance->device_name + ".read_object", 
+            service_definition_read_object,
+            std::bind(&canopen_protocol::handler::service_read_object, this, _1, _2));
+    k.add_service(req->owner, _instance->device_name + ".write_element", 
+            service_definition_write_element,
+            std::bind(&canopen_protocol::handler::service_write_element, this, _1, _2));
+    k.add_service(req->owner, _instance->device_name + ".object_dictionary_list", 
+            service_definition_object_dictionary_list,
+            std::bind(&canopen_protocol::handler::service_object_dictionary_list, 
+                this, _1, _2));
 }
 
 canopen_protocol::handler::~handler() {
-	robotkernel::kernel& k = *robotkernel::kernel::get_instance();
-	k.remove_service(_instance->owner, _instance->device_name + ".read_element");
-	k.remove_service(_instance->owner, _instance->device_name + ".read_object");
-	k.remove_service(_instance->owner, _instance->device_name + ".write_element");
-	k.remove_service(_instance->owner, _instance->device_name + ".object_dictionary_list");
+    robotkernel::kernel& k = *robotkernel::kernel::get_instance();
+    k.remove_service(_instance->owner, _instance->device_name + ".read_element");
+    k.remove_service(_instance->owner, _instance->device_name + ".read_object");
+    k.remove_service(_instance->owner, _instance->device_name + ".write_element");
+    k.remove_service(_instance->owner, _instance->device_name + ".object_dictionary_list");
 }
 
 //! service callback read element
@@ -312,7 +313,7 @@ int canopen_protocol::handler::service_read_element(
 #define READ_ELEMENT_RESP_MAX_VALUE     8
 #define READ_ELEMENT_RESP_VALUE         9
 #define READ_ELEMENT_RESP_ERROR_MESSAGE 10
-	response.resize(11);
+    response.resize(11);
     response[READ_ELEMENT_RESP_NAME]            = elem_desc.name;
     response[READ_ELEMENT_RESP_VALUE_INFO]      = elem_desc.value_info;
     response[READ_ELEMENT_RESP_DATA_TYPE]       = elem_desc.data_type;
