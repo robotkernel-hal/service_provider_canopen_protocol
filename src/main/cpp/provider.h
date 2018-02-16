@@ -51,8 +51,8 @@ namespace canopen_protocol {
             //! default construction
             /*!
             */
-            provider() 
-                : service_provider_base("canopen_protocol") {};
+            provider(const std::string& name) 
+                : service_provider_base(name, "canopen_protocol") {};
     };
 
     class handler : public robotkernel::log_base
