@@ -2,11 +2,17 @@
 
 This supplies a service provider for all robotkernel modules with support for canopen protocol devices. The service provider will provide acyclic calls to access the canopen dictionary entries.
 
-* get object dictionary list: returns a list with all available ids on the device
-* get object description: returns the description of the id
-* get element description: returns the description of one element of an id
-* read element: reads one element value of an id
-* write element: wristes one element value of an id
+; get object dictionary list
+: returns a list with all available ids on the device
+; get object description
+: returns the description of the id
+; get element description
+: returns the description of one element of an id
+; read element
+: reads one element value of an id
+; write element
+: wristes one element value of an id
 
-All of these services will be available through a robotkernel brigdge (e.g. [https://rmc-github.robotic.dlr.de/robotkernel/bridge_ln bridge_ln], [https://rmc-github.robotic.dlr.de/robotkernel/bridge_jsonrpc bridge_jsonrpc], [https://rmc-github.robotic.dlr.de/robotkernel/bridge_cli bridge_cli], ...)
+All of these services will be available through a robotkernel brigdge (e.g. [[robotkernel-5/bridge_ln|bridge_ln]], [[robotkernel-5/bridge_jsonrpc|bridge_jsonrpc]], [[robotkernel-5/bridge_cli|bridge_cli]], ...)
 
+[[Category:Robotkernel-5|Serice provider Jsonrpc]]
