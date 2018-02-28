@@ -17,17 +17,46 @@ No specific configuration is needed for the service provider. The robotkernel ju
  - vector/uint16_t: indices
  - string: error_message
 
-; get object description
-: returns the description of the id
+; read_object
+: Returns the description of the object with given ''index''. On error, the ''error_message'' field will be filled with the error cause.
 
-; get element description
-: returns the description of one element of an id
+ request:
+ - uint16_t: index
+ response:
+ - uint16_t: data_type
+ - uint8_t: objcode
+ - uint8_t: max_subindices
+ - string: name
+ - string: error_message
 
 ; read element
-: reads one element value of an id
+: Reads one element value of an id with given ''index'' and ''sub_index''.
+
+ request:
+ - uint16_t: index
+ - uint8_t: sub_index
+ response:
+ - string: name
+ - uint8_t: value_info
+ - uint16_t: data_type
+ - uint16_t: bit_length
+ - uint16_t: obj_access
+ - uint16_t: unit
+ - string: default_value
+ - string: min_value
+ - string: max_value
+ - string: value
+ - string: error_message
 
 ; write element
-: wristes one element value of an id
+: Writes ''value to one element (''sub index'') of an ''index''. The datatype of ''value'' must match to the datatype of the element. On error, the ''error_message'' field will be filled with the error cause.
+
+ request:
+ - uint16_t: index
+ - uint8_t: sub_index
+ - string: value
+ response:
+ - string: error_message
 
 All of these services will be available through a robotkernel brigdge (e.g. [[robotkernel-5/bridge_ln|bridge_ln]], [[robotkernel-5/bridge_jsonrpc|bridge_jsonrpc]], [[robotkernel-5/bridge_cli|bridge_cli]], ...)
 
