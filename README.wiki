@@ -11,13 +11,21 @@ No specific configuration is needed for the service provider. The robotkernel ju
 = Services =
 
 ; get object dictionary list
-: returns a list with all available ids on the device
+: Returns a list ''indices'' with all available ids on the device. On error, the ''error_message'' field will be filled with the error cause.
+
+ response:
+ - vector/uint16_t: indices
+ - string: error_message
+
 ; get object description
 : returns the description of the id
+
 ; get element description
 : returns the description of one element of an id
+
 ; read element
 : reads one element value of an id
+
 ; write element
 : wristes one element value of an id
 
