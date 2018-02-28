@@ -60,5 +60,5 @@ No specific configuration is needed for the service provider. The robotkernel ju
 
 All of these services will be available through a robotkernel brigdge (e.g. [[robotkernel-5/bridge_ln|bridge_ln]], [[robotkernel-5/bridge_jsonrpc|bridge_jsonrpc]], [[robotkernel-5/bridge_cli|bridge_cli]], ...)
 
-[[Category:Robotkernel-5|Serice provider Jsonrpc]]
+[[Category:Robotkernel-5|Serivice Provider Canopen Protocol]]
 
