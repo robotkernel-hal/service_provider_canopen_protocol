@@ -649,3 +649,60 @@ const std::string canopen_protocol::handler::service_definition_object_dictionar
 "- vector/uint16_t: indices\n"
 "- string: error_message\n";
 
+//! service callback pop next emergency messages
+/*!
+ * \param request service request data
+ * \parma response service response data
+ * \return success
+ */
+int canopen_protocol::handler::service_pop_emergency_message(
+        const service_arglist_t& request, service_arglist_t& response) {
+    emergency_message_t msg;
+    
+    // default response values
+    uint64_t timestamp_sec = 0, timestamp_nsec = 0;
+    uint16_t error_code = 0;
+    uint8_t error_register = 0;
+    std::vector<rk_type> data;
+    std::string error_message = "";
+
+    try {
+        _instance->pop_emergency_message(msg);
+
+        timestamp_sec = msg.ts.tv_sec;
+        timestamp_nsec = msg.ts.tv_nsec;
+        error_code = msg.error_code;
+        error_register = msg.error_register;
+        data.assign(msg.data.begin(), msg.data.end());
+    } catch (std::exception& e) {
+        // no message available
+        error_message = "no emergency messages present";
+    }
+
+#define POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_SEC    0
+#define POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_NSEC   1
+#define POP_EMERGENCY_MESSAGE_RESP_ERROR_CODE       2
+#define POP_EMERGENCY_MESSAGE_RESP_ERROR_REGISTER   3
+#define POP_EMERGENCY_MESSAGE_RESP_DATA             4
+#define POP_EMERGENCY_MESSAGE_RESP_ERROR_MESSAGE    5
+    response.resize(6);
+    response[POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_SEC]  = timestamp_sec;
+    response[POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_NSEC] = timestamp_nsec;
+    response[POP_EMERGENCY_MESSAGE_RESP_ERROR_CODE]     = error_code;
+    response[POP_EMERGENCY_MESSAGE_RESP_ERROR_REGISTER] = error_register;
+    response[POP_EMERGENCY_MESSAGE_RESP_DATA]           = data;
+    response[POP_EMERGENCY_MESSAGE_RESP_ERROR_MESSAGE]  = error_message;
+    
+
+    return 0;
+}
+
+const std::string canopen_protocol::handler::service_definition_pop_emergency_message =
+"response:\n"
+"- uint64_t: timestamp_sec\n"
+"- uint64_t: timestamp_nsec\n"
+"- uint16_t: error_code\n"
+"- uint8_t: error_register\n"
+"- vector/uint8_t: data\n"
+"- string: error_message";
+

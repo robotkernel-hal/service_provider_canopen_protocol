@@ -57,6 +57,13 @@ namespace service_provider {
             std::string name;                       //!< element name
         } element_description_t;
 
+        typedef struct emergency_message {
+            struct timespec ts;
+            uint16_t error_code;
+            uint8_t error_register;
+            std::vector<uint8_t> data;
+        } emergency_message_t;
+
         //! read or write canopen element values
         typedef std::vector<uint8_t> element_t;
 
@@ -109,6 +116,12 @@ namespace service_provider {
                  */
                 virtual void write_element(const uint16_t& index, const uint8_t& sub_index,
                         const element_t& value) = 0;
+
+                //! pop next emergency message, throw exception if non present
+                /*!
+                 * \param msg return emergency message
+                 */
+                virtual void pop_emergency_message(emergency_message_t& msg) = 0;
 
         };
 

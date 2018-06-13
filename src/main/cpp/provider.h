@@ -106,6 +106,16 @@ namespace canopen_protocol {
             int service_object_dictionary_list(const robotkernel::service_arglist_t& request, 
                     robotkernel::service_arglist_t& response);
             static const std::string service_definition_object_dictionary_list;
+
+            //! service callback pop next emergency messages
+            /*!
+             * \param request service request data
+             * \parma response service response data
+             * \return success
+             */
+            int service_pop_emergency_message(const robotkernel::service_arglist_t& request, 
+                    robotkernel::service_arglist_t& response);
+            static const std::string service_definition_pop_emergency_message;
     };
 
 } // namepace canopen_protocol
