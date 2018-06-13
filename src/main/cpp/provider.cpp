@@ -249,6 +249,10 @@ canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& re
             service_definition_object_dictionary_list,
             std::bind(&canopen_protocol::handler::service_object_dictionary_list, 
                 this, _1, _2));
+    k.add_service(req->owner, _instance->device_name + ".pop_emergency_message", 
+            service_definition_pop_emergency_message,
+            std::bind(&canopen_protocol::handler::service_pop_emergency_message, 
+                this, _1, _2));
 }
 
 canopen_protocol::handler::~handler() {
@@ -257,6 +261,7 @@ canopen_protocol::handler::~handler() {
     k.remove_service(_instance->owner, _instance->device_name + ".read_object");
     k.remove_service(_instance->owner, _instance->device_name + ".write_element");
     k.remove_service(_instance->owner, _instance->device_name + ".object_dictionary_list");
+    k.remove_service(_instance->owner, _instance->device_name + ".pop_emergency_message");
 }
 
 //! service callback read element
