@@ -297,13 +297,18 @@ int canopen_protocol::handler::service_read_element(
             max_value = value_2_string(&elem_desc.max_value[0], 
                     elem_desc.max_value.size(), elem_desc.data_type, index);
 
-        _instance->read_element(index, sub_index, value);
+    } catch (std::exception& e) {
+        error_message = e.what();
+    }
+
+    try {
+      _instance->read_element(index, sub_index, value);
 
         // decode value
         resp_value = value_2_string(
                 &value[0], value.size(), elem_desc.data_type, index);
     } catch (std::exception& e) {
-        error_message = e.what();
+        error_message += e.what();
     }
 
     // response data
