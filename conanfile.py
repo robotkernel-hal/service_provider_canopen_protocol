@@ -1,7 +1,4 @@
 from conans import ConanFile, AutoToolsBuildEnvironment
-import os
-
-from conans import ConanFile, AutoToolsBuildEnvironment
 import re
 
 class MainProject(ConanFile):
@@ -10,13 +7,7 @@ class MainProject(ConanFile):
     url = f"https://rmc-github.robotic.dlr.de/robotkernel/{name}"
     description = "robotkernel-5 service provider for canopen protocol devices."
     settings = "os", "compiler", "build_type", "arch"
-    scm = {
-        "type": "git",
-        "url": "auto",
-        "revision": "auto",
-        "submodule": "recursive",
-    }
-
+    exports_sources = "src/*", "README.wiki", "project.properties", "service_provider_canopen_protocol.pc.in", "Makefile.am", "m4/*", "configure.ac", "LICENSE"
     generators = "pkg_config"
     requires = "robotkernel/[~=5.0]@robotkernel/unstable"
 
