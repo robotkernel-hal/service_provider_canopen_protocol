@@ -297,13 +297,18 @@ int canopen_protocol::handler::service_read_element(
             max_value = value_2_string(&elem_desc.max_value[0], 
                     elem_desc.max_value.size(), elem_desc.data_type, index);
 
-        _instance->read_element(index, sub_index, value);
+    } catch (std::exception& e) {
+        error_message = e.what();
+    }
+
+    try {
+      _instance->read_element(index, sub_index, value);
 
         // decode value
         resp_value = value_2_string(
                 &value[0], value.size(), elem_desc.data_type, index);
     } catch (std::exception& e) {
-        error_message = e.what();
+        error_message += e.what();
     }
 
     // response data
@@ -335,6 +340,7 @@ int canopen_protocol::handler::service_read_element(
 }
 
 const std::string canopen_protocol::handler::service_definition_read_element =
+"name: service_provider/canopen_protocol/read_element\n"
 "request:\n"
 "- uint16_t: index\n"
 "- uint8_t: sub_index\n"
@@ -389,6 +395,7 @@ int canopen_protocol::handler::service_read_object(const service_arglist_t& requ
 }
 
 const std::string canopen_protocol::handler::service_definition_read_object =
+"name: service_provider/canopen_protocol/read_object\n"
 "request:\n"
 "- uint16_t: index\n"
 "response:\n"
@@ -612,6 +619,7 @@ func_exit:
 }
 
 const std::string canopen_protocol::handler::service_definition_write_element =
+"name: service_provider/canopen_protocol/write_element\n"
 "request:\n"
 "- uint16_t: index\n"
 "- uint8_t: sub_index\n"
@@ -650,6 +658,7 @@ int canopen_protocol::handler::service_object_dictionary_list(
 }
         
 const std::string canopen_protocol::handler::service_definition_object_dictionary_list =
+"name: service_provider/canopen_protocol/object_dictionary_list\n"
 "response:\n"
 "- vector/uint16_t: indices\n"
 "- string: error_message\n";
@@ -703,6 +712,7 @@ int canopen_protocol::handler::service_pop_emergency_message(
 }
 
 const std::string canopen_protocol::handler::service_definition_pop_emergency_message =
+"name: service_provider/canopen_protocol/pop_emergency_message\n"
 "response:\n"
 "- uint64_t: timestamp_sec\n"
 "- uint64_t: timestamp_nsec\n"
