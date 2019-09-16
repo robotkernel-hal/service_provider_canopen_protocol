@@ -446,7 +446,13 @@ int canopen_protocol::handler::service_write_element(const service_arglist_t& re
     bytelen = (elem_desc.bit_length + 7) / 8;
     value.resize(bytelen);
     
-    pval      = eval_full(buf);
+    try {
+        pval      = eval_full(buf);
+    } catch (std::exception& e) {
+        error_message = format_string("caught exception while evaluating value: %s\n", e.what());
+        goto func_exit;
+    }
+
     pintval   = dynamic_cast<py_int *>(pval);
     plongval  = dynamic_cast<py_long *>(pval);
     pfloatval = dynamic_cast<py_float *>(pval);
