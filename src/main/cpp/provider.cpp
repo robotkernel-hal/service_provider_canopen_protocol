@@ -302,11 +302,13 @@ int canopen_protocol::handler::service_read_element(
     }
 
     try {
-      _instance->read_element(index, sub_index, value);
+        _instance->read_element(index, sub_index, value);
 
         // decode value
         resp_value = value_2_string(
                 &value[0], value.size(), elem_desc.data_type, index);
+    } catch (sdo_abort_exception& e) {
+        error_message = format_string("got sdo abort : %08X\n", e.abort_code);
     } catch (std::exception& e) {
         error_message += e.what();
     }
