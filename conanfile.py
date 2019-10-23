@@ -9,7 +9,7 @@ class MainProject(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     exports_sources = "src/*", "README.wiki", "project.properties", "service_provider_canopen_protocol.pc.in", "Makefile.am", "m4/*", "configure.ac", "LICENSE"
     generators = "pkg_config"
-    requires = "robotkernel/[~=5.0]@robotkernel/unstable"
+    requires = "robotkernel/[~=5.0]@robotkernel/stable"
 
     def source(self):
         filedata = None
