@@ -28,10 +28,37 @@
 #include <list>
 
 #include "robotkernel/service_interface.h"
+#include <exception>
+
 
 namespace service_provider {
 
     namespace canopen_protocol {
+
+        class sdo_abort_exception : virtual public std::exception {
+            public:
+                const uint32_t abort_code;
+
+                /** Constructor (C++ STL string, int, int).
+                 *  @param msg The error message
+                 */
+                explicit sdo_abort_exception(uint32_t abort_code) : 
+                    abort_code(abort_code) {}
+
+                /** Destructor.
+                 *  Virtual to allow for subclassing.
+                 */
+                virtual ~sdo_abort_exception() throw () {}
+
+                /** Returns a pointer to the (constant) error description.
+                 *  @return A pointer to a const char*. The underlying memory
+                 *  is in possession of the Except object. Callers must
+                 *  not attempt to free the memory.
+                 */
+                virtual const char* what() const throw () {
+                    return nullptr;
+                }
+        };
 
         //! retrieve canopen index list of object dictionary 
         typedef std::vector<uint16_t> object_dictionary_list_t;

@@ -10,8 +10,3 @@ libservice_provider_canopen_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-alias
 												   -I$(srcdir) -I$(builddir) -I$(srcdir)/include 	\
 												   @ROBOTKERNEL_CFLAGS@
 libservice_provider_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
-
-install-exec-hook:
-	mkdir -p $(prefix)/share/ln
-	-cp -rf $(top_srcdir)/share/ln/* $(prefix)/share/ln/
-	-cp -rf $(top_builddir)/share/ln/* $(prefix)/share/ln/
