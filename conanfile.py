@@ -1,11 +1,5 @@
 from conans import ConanFile, AutoToolsBuildEnvironment, tools
-<<<<<<< HEAD
-import os
-
-from conans import ConanFile, AutoToolsBuildEnvironment, tools
-=======
->>>>>>> release/5.0.2
-import re
+import re, os
 
 class MainProject(ConanFile):
     name = "service_provider_canopen_protocol"
