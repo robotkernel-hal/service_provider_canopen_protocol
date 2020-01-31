@@ -28,7 +28,7 @@ class canopen_emergency(object):
         self.error_register = error_register
         self.data = copy.copy(data)
 
-class canopen_device(object, helpers.svc_wrapper):
+class canopen_device(helpers.svc_wrapper):
     def __init__(self, service_prefix, app, widget, modname, devname):
         helpers.svc_wrapper.__init__(self, app.clnt,
                 "%s.%s.%s.canopen_protocol" % (service_prefix, modname, devname))
