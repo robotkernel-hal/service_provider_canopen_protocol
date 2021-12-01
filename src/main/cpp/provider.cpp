@@ -729,3 +729,12 @@ const std::string canopen_protocol::handler::service_definition_pop_emergency_me
 "- vector/uint8_t: data\n"
 "- string: error_message";
 
+typedef void (*get_sd_t)(std::list<std::string>& sd_list);
+extern "C" void get_sd(std::list<std::string>& sd_list) {
+    sd_list.push_back(canopen_protocol::handler::service_definition_read_element);
+    sd_list.push_back(canopen_protocol::handler::service_definition_read_object);
+    sd_list.push_back(canopen_protocol::handler::service_definition_write_element);
+    sd_list.push_back(canopen_protocol::handler::service_definition_object_dictionary_list);
+    sd_list.push_back(canopen_protocol::handler::service_definition_pop_emergency_message);
+}
+
