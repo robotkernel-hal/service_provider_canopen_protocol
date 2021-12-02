@@ -75,7 +75,6 @@ namespace canopen_protocol {
              */
             int service_read_element(const robotkernel::service_arglist_t& request, 
                     robotkernel::service_arglist_t& response);
-            static const std::string service_definition_read_element;
 
             //! service callback read object
             /*!
@@ -85,7 +84,6 @@ namespace canopen_protocol {
              */
             int service_read_object(const robotkernel::service_arglist_t& request, 
                     robotkernel::service_arglist_t& response);
-            static const std::string service_definition_read_object;
 
             //! service callback write element
             /*!
@@ -95,7 +93,6 @@ namespace canopen_protocol {
              */
             int service_write_element(const robotkernel::service_arglist_t& request, 
                     robotkernel::service_arglist_t& response);
-            static const std::string service_definition_write_element;
 
             //! service callback list object dictionary
             /*!
@@ -105,7 +102,6 @@ namespace canopen_protocol {
              */
             int service_object_dictionary_list(const robotkernel::service_arglist_t& request, 
                     robotkernel::service_arglist_t& response);
-            static const std::string service_definition_object_dictionary_list;
 
             //! service callback pop next emergency messages
             /*!
@@ -115,9 +111,7 @@ namespace canopen_protocol {
              */
             int service_pop_emergency_message(const robotkernel::service_arglist_t& request, 
                     robotkernel::service_arglist_t& response);
-            static const std::string service_definition_pop_emergency_message;
     };
-
 } // namepace canopen_protocol
 
 #if EMACS
