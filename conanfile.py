@@ -8,6 +8,7 @@ class MainProject(ConanFile):
     name = "service_provider_canopen_protocol"
     description = "robotkernel service provider for canopen protocol devices."
     exports_sources = ["*", "!.gitignore"] + ["!%s" % x for x in tools.Git().excluded_files()]
+    requires = "robotkernel/[~=5]@robotkernel/stable"
 
     def package_info(self):
         base = self.python_requires["conan_template_ln_generator"].module.RobotkernelLNGeneratorConanFile
