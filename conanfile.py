@@ -2,7 +2,7 @@ from conans import ConanFile, tools
 import os
 
 class MainProject(ConanFile):
-    python_requires = "conan_template_ln_generator/[~=5 >=5.0.6]@robotkernel/stable"
+    python_requires = "conan_template_ln_generator/[~=5 >=5.0.7]@robotkernel/stable"
     python_requires_extend = "conan_template_ln_generator.RobotkernelLNGeneratorConanFile"
 
     name = "service_provider_canopen_protocol"
@@ -14,7 +14,7 @@ class MainProject(ConanFile):
         base = self.python_requires["conan_template_ln_generator"].module.RobotkernelLNGeneratorConanFile
         base.package_info(self)
 
-        self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python/rk_gui_plugin"))
+        self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python"))
 
     def config_options(self):
         self.options.generate_ln_mds = True
