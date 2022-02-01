@@ -15,11 +15,8 @@ class MainProject(ConanFile):
         self.requires("robotkernel/[~=5]@robotkernel/stable")
 
     def package_info(self):
-        base = self.python_requires["conan_template"].module.RobotkernelLNGeneratorConanFile
+        base = self.python_requires["conan_template"].module.RobotkernelConanFile
         base.package_info(self)
 
         self.env_info.PYTHONPATH.append(os.path.join(self.package_folder, "bindings/python"))
-
-    def config_options(self):
-        self.options.generate_ln_mds = True
 

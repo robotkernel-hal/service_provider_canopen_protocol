@@ -42,76 +42,82 @@ namespace service_provider {
 
 namespace canopen_protocol {
 
-    // forward declaration
-    class handler;
+// forward declaration
+class handler;
 
-    class provider : public robotkernel::service_provider_base<handler, base> 
-    {
-        public:
-            //! default construction
-            /*!
-            */
-            provider(const std::string& name) 
-                : service_provider_base(name, "canopen_protocol") {};
-    };
+class provider : public robotkernel::service_provider_base<handler, base> 
+{
+    public:
+        //! default construction
+        /*!
+        */
+        provider(const std::string& name) 
+            : service_provider_base(name, "canopen_protocol") {};
+};
 
-    class handler : public robotkernel::log_base
-    {
-        public:
-            typedef std::shared_ptr<service_provider::canopen_protocol::base> sp_cp_base_t;
-            sp_cp_base_t _instance;
+class handler : public robotkernel::log_base
+{
+    public:
+        typedef std::shared_ptr<service_provider::canopen_protocol::base> sp_cp_base_t;
+        sp_cp_base_t _instance;
 
-            //! handler construction
-            handler(const robotkernel::sp_service_interface_t& req);
+        //! handler construction
+        handler(const robotkernel::sp_service_interface_t& req);
 
-            //! handler destruction
-            ~handler();
+        //! handler destruction
+        ~handler();
 
-            //! service callback read element
-            /*!
-             * \param request service request data
-             * \parma response service response data
-             * \return success
-             */
-            int service_read_element(const robotkernel::service_arglist_t& request, 
-                    robotkernel::service_arglist_t& response);
+        static const std::string service_definition_read_element;
+        static const std::string service_definition_read_object;
+        static const std::string service_definition_write_element;
+        static const std::string service_definition_object_dictionary_list;
+        static const std::string service_definition_pop_emergency_message;
 
-            //! service callback read object
-            /*!
-             * \param request service request data
-             * \parma response service response data
-             * \return success
-             */
-            int service_read_object(const robotkernel::service_arglist_t& request, 
-                    robotkernel::service_arglist_t& response);
+        //! service callback read element
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_read_element(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
 
-            //! service callback write element
-            /*!
-             * \param request service request data
-             * \parma response service response data
-             * \return success
-             */
-            int service_write_element(const robotkernel::service_arglist_t& request, 
-                    robotkernel::service_arglist_t& response);
+        //! service callback read object
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_read_object(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
 
-            //! service callback list object dictionary
-            /*!
-             * \param request service request data
-             * \parma response service response data
-             * \return success
-             */
-            int service_object_dictionary_list(const robotkernel::service_arglist_t& request, 
-                    robotkernel::service_arglist_t& response);
+        //! service callback write element
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_write_element(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
 
-            //! service callback pop next emergency messages
-            /*!
-             * \param request service request data
-             * \parma response service response data
-             * \return success
-             */
-            int service_pop_emergency_message(const robotkernel::service_arglist_t& request, 
-                    robotkernel::service_arglist_t& response);
-    };
+        //! service callback list object dictionary
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_object_dictionary_list(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
+
+        //! service callback pop next emergency messages
+        /*!
+         * \param request service request data
+         * \parma response service response data
+         * \return success
+         */
+        int service_pop_emergency_message(const robotkernel::service_arglist_t& request, 
+                robotkernel::service_arglist_t& response);
+};
 } // namepace canopen_protocol
 
 #if EMACS
