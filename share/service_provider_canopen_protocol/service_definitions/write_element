@@ -1,0 +1,7 @@
+name: service_provider/canopen_protocol/write_element
+request:
+- uint16_t: index
+- uint8_t: sub_index
+- string: value
+response:
+- string: error_message

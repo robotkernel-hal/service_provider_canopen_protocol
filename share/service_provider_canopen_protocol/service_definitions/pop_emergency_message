@@ -1,0 +1,9 @@
+name: service_provider/canopen_protocol/pop_emergency_message
+response:
+- uint64_t: timestamp_sec
+- uint64_t: timestamp_nsec
+- uint16_t: error_code
+- uint8_t: error_register
+- vector/uint8_t: data
+- string: error_message
+

@@ -1,0 +1,17 @@
+name: service_provider/canopen_protocol/read_element
+request:
+- uint16_t: index
+- uint8_t: sub_index
+response:
+- string: name
+- uint8_t: value_info
+- uint16_t: data_type
+- uint16_t: bit_length
+- uint16_t: obj_access
+- uint16_t: unit
+- string: default_value
+- string: min_value
+- string: max_value
+- string: value
+- string: error_message
+
