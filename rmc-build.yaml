@@ -1,3 +1,6 @@
+_: &build_configs
+  - imports: [linux_defaults]
+
 builds:
   - context: conan
     build_file: conanfile.msgdef.py
