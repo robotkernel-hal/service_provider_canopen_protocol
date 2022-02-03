@@ -14,18 +14,18 @@ libservice_provider_canopen_protocol_la_CXXFLAGS = --std=c++11 -fno-strict-alias
 												   @ROBOTKERNEL_CFLAGS@
 libservice_provider_canopen_protocol_la_LDFLAGS  = -Wall -release $(PACKAGE_VERSION)
 
-VPATH = $(srcdir):$(top_srcdir)/share/robotkernel/service_definitions
+VPATH = $(srcdir):$(top_srcdir)/share/service_definitions
 
-SERVICE_DEFINITIONS = service_provider_canopen_protocol/read_element \
-					  service_provider_canopen_protocol/read_object \
-					  service_provider_canopen_protocol/write_element \
-					  service_provider_canopen_protocol/object_dictionary_list \
-					  service_provider_canopen_protocol/pop_emergency_message
+SERVICE_DEFINITIONS = robotkernel/service_provider_canopen_protocol/read_element \
+					  robotkernel/service_provider_canopen_protocol/read_object \
+					  robotkernel/service_provider_canopen_protocol/write_element \
+					  robotkernel/service_provider_canopen_protocol/object_dictionary_list \
+					  robotkernel/service_provider_canopen_protocol/pop_emergency_message
 
 $(top_builddir)/src/main/cpp/service_definitions.h: Makefile $(SERVICE_DEFINITIONS)
 	install -d $(top_builddir)/src/main/cpp/include/robotkernel
 	@echo creating $@
-	service_generate --indir $(top_srcdir)/share/robotkernel/service_definitions --out $@ $(SERVICE_DEFINITIONS)
+	service_generate --indir $(top_srcdir)/share/service_definitions --out $@ $(SERVICE_DEFINITIONS)
 	touch $@
 
 

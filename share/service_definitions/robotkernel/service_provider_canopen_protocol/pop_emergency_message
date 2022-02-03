@@ -1,4 +1,4 @@
-name: service_provider/canopen_protocol/pop_emergency_message
+name: service_provider_canopen_protocol/pop_emergency_message
 response:
 - uint64_t: timestamp_sec
 - uint64_t: timestamp_nsec

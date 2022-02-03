@@ -40,11 +40,11 @@ using namespace robotkernel;
 using namespace service_provider;
 using namespace string_util;
 
-const std::string service_provider::canopen_protocol::handler::service_definition_read_element = service_provider_canopen_protocol_read_element_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_read_object = service_provider_canopen_protocol_read_object_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_write_element = service_provider_canopen_protocol_write_element_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_object_dictionary_list = service_provider_canopen_protocol_object_dictionary_list_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_pop_emergency_message = service_provider_canopen_protocol_pop_emergency_message_service_definition;
+const std::string service_provider::canopen_protocol::handler::service_definition_read_element = robotkernel_service_provider_canopen_protocol_read_element_service_definition;
+const std::string service_provider::canopen_protocol::handler::service_definition_read_object = robotkernel_service_provider_canopen_protocol_read_object_service_definition;
+const std::string service_provider::canopen_protocol::handler::service_definition_write_element = robotkernel_service_provider_canopen_protocol_write_element_service_definition;
+const std::string service_provider::canopen_protocol::handler::service_definition_object_dictionary_list = robotkernel_service_provider_canopen_protocol_object_dictionary_list_service_definition;
+const std::string service_provider::canopen_protocol::handler::service_definition_pop_emergency_message = robotkernel_service_provider_canopen_protocol_pop_emergency_message_service_definition;
 
 /** Ethercat data types */
 typedef enum {

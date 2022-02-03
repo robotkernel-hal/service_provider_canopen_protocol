@@ -1,5 +1,0 @@
-name: service_provider/canopen_protocol/object_dictionary_list
-response:
-- vector/uint16_t: indices
-- string: error_message
-
