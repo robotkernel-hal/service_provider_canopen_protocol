@@ -35,7 +35,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         helpers.builder_base.__init__(self, fn, 'canopen_protocol_box')
         helpers.service_provider_view.__init__(self, parent.app, parent, self.canopen_protocol_box, 'object_dictionary_list')
 
-        container.pack_start(self.canopen_protocol_box, True, True)
+        container.pack_start(self.canopen_protocol_box, True, True, 0)
 
         self.devices = {}
         self.current_device = None
@@ -96,7 +96,9 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         #setattr(self.canopen_protocol_vpaned.get_child1(), "resize", True)
         #setattr(self.canopen_protocol_vpaned.get_child2(), "resize", False)
         self.canopen_protocol_refresh_btn.connect("clicked", self.on_refresh)
-        self.active_color = self.app.window.get_style().text[0].to_string()
+        ## FIXME: The line below does not work for Gtk3
+        ## self.active_color = self.app.window.get_style().text[0].to_string()
+        self.active_color = "red"
         self.create_treeview(self.canopen_protocol_tv)
         self.tv = self.treeview_dictionary
 
