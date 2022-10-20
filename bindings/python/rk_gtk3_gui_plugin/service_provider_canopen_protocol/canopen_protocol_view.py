@@ -104,9 +104,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         #setattr(self.canopen_protocol_vpaned.get_child1(), "resize", True)
         #setattr(self.canopen_protocol_vpaned.get_child2(), "resize", False)
         self.canopen_protocol_refresh_btn.connect("clicked", self.on_refresh)
-        ## FIXME: The line below does not work for Gtk3
-        ## self.active_color = self.app.window.get_style().text[0].to_string()
-        self.active_color = "red"
+        self.active_color = helpers.gui_utils.get_active_color(self.app.window)
         self.create_treeview(self.canopen_protocol_tv)
         self.tv = self.treeview_dictionary
 
