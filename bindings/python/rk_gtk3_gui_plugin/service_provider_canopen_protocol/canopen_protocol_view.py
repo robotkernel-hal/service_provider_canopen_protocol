@@ -18,6 +18,12 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import os
+
+import logging
+
+logger = logging.getLogger()
+
+
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('GLib', '2.0')
@@ -31,6 +37,8 @@ import helpers
 
 class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base, canopen_treeview):
     def __init__(self, parent, container):
+        logger.info("initializing canopen_protocol_view() with canopen_protocol_view.ui")
+        
         fn = os.path.join(os.path.dirname(__file__), 'canopen_protocol_view.ui')
         helpers.builder_base.__init__(self, fn, 'canopen_protocol_box')
         helpers.service_provider_view.__init__(self, parent.app, parent, self.canopen_protocol_box, 'object_dictionary_list')
@@ -101,6 +109,13 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         self.active_color = "red"
         self.create_treeview(self.canopen_protocol_tv)
         self.tv = self.treeview_dictionary
+
+
+    # experimental for debugging
+    def on_key_value_tv_button_press_event(self, btn, ev):
+        logger.warning("handler on_key_value_tv_button_press_event "
+                       "for object canopen_protocol_tv is not implemented - ignored")
+        return True
 
     def on_canopen_protocol_refresh_emergencies_btn_clicked(self, btn):
         if self.current_device is None:
