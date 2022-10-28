@@ -20,6 +20,9 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 from canopen_object import *
 import helpers
 import datetime, copy
+import logging
+
+logger = logging.getLogger()
 
 class canopen_emergency(object):
     def __init__(self, timestamp, error_code, error_register, data):
@@ -30,9 +33,13 @@ class canopen_emergency(object):
 
 class canopen_device(helpers.svc_wrapper):
     def __init__(self, service_prefix, app, widget, modname, devname):
+        logger.info("registering service {prefix}.{modname}.{devname}.canopen_protocol (service_prefix={prefix}, modname={modname}, devname={devname}".format(prefix=service_prefix,
+                                                                                                                                                              modname=modname,
+                                                                                                                                                              devname=devname))
         helpers.svc_wrapper.__init__(self, app.clnt,
                 "%s.%s.%s.canopen_protocol" % (service_prefix, modname, devname))
 
+        self.prefix = service_prefix
         self.modname = modname
         self.devname = devname
         self.widget = widget
@@ -82,6 +89,9 @@ class canopen_device(helpers.svc_wrapper):
 
     def list_dictionary(self):
         if not len(self.canopen_dictionary): #only uppon first call
+            logger.debug("calling service {prefix}.{modname}.{devname}.canopen_protocol::object_disctionary_list (service_prefix={prefix}, modname={modname}, devname={devname}".format(prefix=self.prefix,
+                                                                                                                                                              modname=self.modname,
+                                                                                                                                                              devname=self.devname))
             self.svc_object_dictionary_list.call()
             canopen_dictionary = self.svc_object_dictionary_list.resp.indices
             for iter, idn in enumerate(canopen_dictionary):
