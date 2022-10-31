@@ -16,8 +16,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import print_function
+from __future__ import absolute_import
 
-from canopen_object import *
+from .canopen_object import *
 import helpers
 import datetime, copy
 import logging
@@ -76,7 +78,7 @@ class canopen_device(helpers.svc_wrapper):
 
     def upload_emergencies(self):
         ans = self.pop_emergency_message()
-        print ans
+        print(ans)
 
         if ans.error_message_len != 0:
             return None

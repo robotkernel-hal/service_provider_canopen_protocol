@@ -16,6 +16,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import print_function
+from __future__ import absolute_import
 
 import gi
 #gi.require_version('Gtk', '3.0')
@@ -25,7 +27,7 @@ from gi.repository import GObject
 import time
 import traceback
 
-from canopen_element import *
+from .canopen_element import *
 
 class canopen_object(object):
     def __init__(self, device, idn):
@@ -73,7 +75,7 @@ class canopen_object(object):
                 self.canopen_device.svc_call_pending = False
                 self.canopen_device.queue_draw()
             except:
-                print traceback.format_exc()
+                print(traceback.format_exc())
             return False
 
         #non-blocking read on data, with callback (see get_data)

@@ -16,6 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
+from __future__ import absolute_import
 
 import os
 
@@ -30,8 +31,8 @@ gi.require_version('GLib', '2.0')
 from gi.repository import Gtk
 from gi.repository import GObject
 
-from canopen_treeview import canopen_treeview
-from canopen_device import canopen_device
+from .canopen_treeview import canopen_treeview
+from .canopen_device import canopen_device
 
 import helpers
 
