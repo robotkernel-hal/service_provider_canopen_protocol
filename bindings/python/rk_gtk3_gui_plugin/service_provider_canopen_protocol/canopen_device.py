@@ -37,7 +37,7 @@ class canopen_device(helpers.svc_wrapper):
                                                                                                                                                               modname=modname,
                                                                                                                                                               devname=devname))
         helpers.svc_wrapper.__init__(self, app.clnt,
-                "%s.%s.%s.canopen_protocol" % (service_prefix, modname, devname))
+                "{}.{}.{}.canopen_protocol".format(service_prefix, modname, devname))
 
         self.prefix = service_prefix
         self.modname = modname
