@@ -27,6 +27,8 @@ import traceback
 
 from canopen_element import *
 
+import links_and_nodes as ln
+
 class canopen_object(object):
     def __init__(self, device, idn):
         self.canopen_device = device
@@ -80,5 +82,9 @@ class canopen_object(object):
         self.canopen_device.svc_call_pending = True
         self.canopen_device.svc_read_object.req.index = self.idn
         self.canopen_device.svc_read_object.call_async()
-        self.canopen_device.svc_read_object.gobject_on_async_finish(cb_read, time.time())
+        # old GTK2 code: set async finish handler
+        #self.canopen_device.svc_read_object.gobject_on_async_finish(cb_read, time.time())
+        # new GTK2 code
+        loop = ln.GLibMainloop()
+        self.canopen_device.svc_read_object.mainloop_on_async_finish(loop, cb_read, time.time())
 
