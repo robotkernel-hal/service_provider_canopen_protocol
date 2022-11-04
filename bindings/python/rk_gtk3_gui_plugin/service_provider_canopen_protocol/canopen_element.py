@@ -20,7 +20,6 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 import time
 import gi
 
-import links_and_nodes as ln
 
 #gi.require_version('Gtk', '3.0')
 gi.require_version('GLib', '2.0')
@@ -75,6 +74,5 @@ class canopen_element(object):
         # experimental: adapt to new LN API for GTK3
         #self.canopen_device.svc_read_element.gobject_on_async_finish(cb_read, time.time())
 
-        loop = ln.GLibMainloop()
-        self.canopen_device.svc_read_element.mainloop_on_async_finish(loop, cb_read, time.time())
+        self.canopen_device.svc_read_element.mainloop_on_async_finish(self.async_loop, cb_read, time.time())
 

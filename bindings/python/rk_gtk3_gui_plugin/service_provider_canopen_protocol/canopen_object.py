@@ -27,8 +27,6 @@ import traceback
 
 from canopen_element import *
 
-import links_and_nodes as ln
-
 class canopen_object(object):
     def __init__(self, device, idn):
         self.canopen_device = device
@@ -85,6 +83,5 @@ class canopen_object(object):
         # old GTK2 code: set async finish handler
         #self.canopen_device.svc_read_object.gobject_on_async_finish(cb_read, time.time())
         # new GTK2 code
-        loop = ln.GLibMainloop()
-        self.canopen_device.svc_read_object.mainloop_on_async_finish(loop, cb_read, time.time())
+        self.canopen_device.svc_read_object.mainloop_on_async_finish(self.async_loop, cb_read, time.time())
 
