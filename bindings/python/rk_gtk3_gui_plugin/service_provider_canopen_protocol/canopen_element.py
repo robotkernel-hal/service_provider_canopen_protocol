@@ -74,5 +74,5 @@ class canopen_element(object):
         # experimental: adapt to new LN API for GTK3
         #self.canopen_device.svc_read_element.gobject_on_async_finish(cb_read, time.time())
 
-        self.canopen_device.svc_read_element.mainloop_on_async_finish(self.async_loop, cb_read, time.time())
+        self.canopen_device.svc_read_element.mainloop_on_async_finish(self.canopen_device.svc_read_element.async_loop, cb_read, time.time())
 
