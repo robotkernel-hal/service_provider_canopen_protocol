@@ -39,9 +39,9 @@ class canopen_device(helpers.svc_wrapper):
                                                                                                                                                               modname=modname,
                                                                                                                                                               devname=devname))
         helpers.svc_wrapper.__init__(self, app.clnt,
-                "%s.%s.%s.canopen_protocol" % (service_prefix, modname, devname))
+                "{}.{}.{}.canopen_protocol".format(service_prefix, modname, devname))
 
-        self.prefix = service_prefix
+        self.service_prefix = service_prefix # beware, self.prefix is used in the parent class
         self.modname = modname
         self.devname = devname
         self.widget = widget
@@ -90,8 +90,8 @@ class canopen_device(helpers.svc_wrapper):
         #if not ans.error_message_len
 
     def list_dictionary(self):
-        if not len(self.canopen_dictionary): #only uppon first call
-            logger.debug("calling service {prefix}.{modname}.{devname}.canopen_protocol::object_disctionary_list (service_prefix={prefix}, modname={modname}, devname={devname}".format(prefix=self.prefix,
+        if not len(self.canopen_dictionary): #only upon first call
+            logger.debug("calling service {service_prefix}.{modname}.{devname}.canopen_protocol::object_disctionary_list (service_prefix={service_prefix}, modname={modname}, devname={devname}".format(service_prefix=self.service_prefix,
                                                                                                                                                               modname=self.modname,
                                                                                                                                                               devname=self.devname))
             self.svc_object_dictionary_list.call()
