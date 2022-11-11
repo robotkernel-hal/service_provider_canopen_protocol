@@ -19,6 +19,7 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import print_function
 from __future__ import absolute_import
 
+from builtins import object
 from .canopen_object import *
 import helpers
 import datetime, copy
@@ -98,7 +99,7 @@ class canopen_device(helpers.svc_wrapper):
             canopen_dictionary = self.svc_object_dictionary_list.resp.indices
             for iter, idn in enumerate(canopen_dictionary):
                 self.canopen_dictionary[idn] = canopen_object(self, idn)
-        return self.canopen_dictionary.keys()
+        return list(self.canopen_dictionary.keys())
 
     def list_processdata(self, ids):
         for id in ids:

@@ -29,3 +29,4 @@
 /compile
 /workspace-release
 share/ln/service_provider_canopen_protocol.inc.lnc
+*.bak

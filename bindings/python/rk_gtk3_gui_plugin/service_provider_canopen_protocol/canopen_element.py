@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+from builtins import map
+from builtins import object
 import time
 import gi
 
@@ -59,7 +61,7 @@ class canopen_element(object):
         def cb_read(starttime):
             # callback after canopen returned with data
             data = self.canopen_device.svc_read_element.resp
-            map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__)
+            list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
             self.valid = True
             self.canopen_device.svc_call_pending = False
             self.canopen_device.queue_draw()

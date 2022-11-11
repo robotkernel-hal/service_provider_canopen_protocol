@@ -19,6 +19,9 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 from __future__ import print_function
 from __future__ import absolute_import
 
+from builtins import map
+from builtins import range
+from builtins import object
 import gi
 #gi.require_version('Gtk', '3.0')
 #gi.require_version('GLib', '2.0')
@@ -63,7 +66,7 @@ class canopen_object(object):
             #callback after canopen returned with data
             try:
                 data = self.canopen_device.svc_read_object.resp
-                map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__)
+                list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
                 self.name = data.name.decode('latin1')
                 self.objcode = data.objcode
                 self.max_subindices = data.max_subindices
