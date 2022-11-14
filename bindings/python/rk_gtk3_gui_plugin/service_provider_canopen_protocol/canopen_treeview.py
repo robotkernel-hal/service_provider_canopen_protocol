@@ -29,6 +29,10 @@ from gi.repository import GObject
 import helpers
 from .canopen_types import *
 from helpers.treestore_helpers import search, match_func
+import logging
+
+logger = logging.getLogger()
+
 
 class canopen_treeview(object):
     def __init__(self):
@@ -195,7 +199,12 @@ class canopen_treeview(object):
                 object       = device.canopen_dictionary[index]
                 object.get_data()
                 if object.objcode == 7:
-                    element      = object.subindices[0]
+                    try:
+                        element      = object.subindices[0]
+                    except KeyError:
+                        logger.warning("treeview.cb_data(): key 0 not found")
+                        return False
+                    
                     element.get_data()
                     cell.set_property("text", element.value)
                 else:
