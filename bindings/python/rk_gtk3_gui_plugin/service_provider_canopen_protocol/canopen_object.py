@@ -29,8 +29,12 @@ import gi
 from gi.repository import GObject
 import time
 import traceback
+import logging
+
 
 from .canopen_element import *
+
+logger = logging.getLogger()
 
 class canopen_object(object):
     def __init__(self, device, idn):
@@ -65,9 +69,17 @@ class canopen_object(object):
         def cb_read(starttime):
             #callback after canopen returned with data
             try:
-                data = self.canopen_device.svc_read_object.resp
+                self.canopen_device.svc_read_object.utf8_decode_char_fields(False)
+                
+                data = self.canopen_device.svc_read_object.resp                
                 list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
-                self.name = data.name.decode('latin1')
+                try:
+                    self.name = data.name.decode('latin1')
+                except AttributeError as exc:
+                    logger.warning("canopen_object.getdata(): data.name field"
+                                   " is already of type string, using field directly")
+                    self.name = data.name
+                    
                 self.objcode = data.objcode
                 self.max_subindices = data.max_subindices
                 self.subindices.clear()
