@@ -61,6 +61,7 @@ class canopen_element(object):
         def cb_read(starttime):
             # callback after canopen returned with data
             data = self.canopen_device.svc_read_element.resp
+            # FIXME: Replace this with a loop
             list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
             self.valid = True
             self.canopen_device.svc_call_pending = False

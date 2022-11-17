@@ -155,6 +155,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         self.treestore_dictionary.clear()
         self.current_device.list_dictionary()
 
+        # FIXME: Replace this with a loop
         list(map(lambda x: self.treestore_dictionary.insert(None, -1, [x, "", self.current_device]),
                 self.current_device.canopen_dictionary))
 

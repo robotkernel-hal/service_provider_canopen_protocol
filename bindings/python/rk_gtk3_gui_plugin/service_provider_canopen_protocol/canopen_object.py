@@ -71,7 +71,8 @@ class canopen_object(object):
             try:
                 self.canopen_device.svc_read_object.utf8_decode_char_fields(False)
                 
-                data = self.canopen_device.svc_read_object.resp                
+                data = self.canopen_device.svc_read_object.resp
+                # FIXME: Replace this with a loop
                 list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
                 try:
                     self.name = data.name.decode('latin1')
