@@ -107,16 +107,17 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         #setattr(self.canopen_protocol_vpaned.get_child1(), "resize", True)
         #setattr(self.canopen_protocol_vpaned.get_child2(), "resize", False)
         self.canopen_protocol_refresh_btn.connect("clicked", self.on_refresh)
-        self.active_color = helpers.gui_utils.get_active_color(self.app.window)
+        self.active_color = helpers.gui_utils.get_active_color_str(self.app.window)
         self.create_treeview(self.canopen_protocol_tv)
         self.tv = self.treeview_dictionary
+        self.tv.expand_all()
 
 
     # experimental for debugging
-    def on_key_value_tv_button_press_event(self, btn, ev):
-        logger.warning("handler on_key_value_tv_button_press_event "
-                       "for object canopen_protocol_tv is not implemented - ignored")
-        return True
+    #def on_key_value_tv_button_press_event(self, btn, ev):
+    #    logger.warning("handler on_key_value_tv_button_press_event "
+    #                   "for object canopen_protocol_tv is not implemented - ignored")
+    #    return True
 
     def on_canopen_protocol_refresh_emergencies_btn_clicked(self, btn):
         if self.current_device is None:
@@ -138,6 +139,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
                 self.current_device.canopen_dictionary[index].subindices[sub_index].valid = False
 
         self.treeview_dictionary.queue_draw()
+        self.treeview_dictionary.expand_all()
 
     def show(self, modname, devname):
         #if self.current_device and self.current_device.modname == modname and self.current_device.devname == devname:

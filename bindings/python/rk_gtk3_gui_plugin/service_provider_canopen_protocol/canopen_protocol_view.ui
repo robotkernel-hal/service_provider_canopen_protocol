@@ -81,7 +81,6 @@
                   <object class="GtkTreeView" id="canopen_protocol_tv">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <signal name="button-press-event" handler="on_key_value_tv_button_press_event" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection"/>
                     </child>
