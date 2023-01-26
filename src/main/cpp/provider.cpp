@@ -67,6 +67,9 @@ typedef enum {
    ECT_INTEGER64       = 0x0015,
    ECT_UNSIGNED24      = 0x0016,
    ECT_UNSIGNED64      = 0x001B,
+   ECT_BYTE            = 0x001E, 
+   ECT_WORD            = 0x001F, 
+   ECT_DWORD           = 0x0020,
    ECT_BIT1            = 0x0030,
    ECT_BIT2            = 0x0031,
    ECT_BIT3            = 0x0032,
@@ -105,6 +108,12 @@ string data_type_to_string(uint16_t dtype) {
             return string("REAL32");
         case ECT_REAL64:
             return string("REAL64");
+        case ECT_BYTE:
+            return string("BYTE");
+        case ECT_WORD:
+            return string("WORD");
+        case ECT_DWORD:
+            return string("DWORD");
         case ECT_BIT1:
             return string("BIT1");
         case ECT_BIT2:
@@ -206,6 +215,12 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             return format_string("%f", *(float *)usdo);
         case ECT_REAL64:
             return format_string("%f", *(double *)usdo);
+        case ECT_BYTE:
+            return format_string("0x%02X", *(uint8_t *)usdo);
+        case ECT_WORD:
+            return format_string("0x%04X", *(uint16_t *)usdo);
+        case ECT_DWORD:
+            return format_string("0x%08X", *(uint32_t *)usdo);
         case ECT_BIT1:
         case ECT_BIT2:
         case ECT_BIT3:
