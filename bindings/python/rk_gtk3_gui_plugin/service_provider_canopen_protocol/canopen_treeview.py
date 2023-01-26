@@ -77,18 +77,24 @@ class canopen_treeview(object):
                 element.get_data()
                 cell.set_property("text", element.name)
             else:
+                path         = store.get_path(iter)
                 index        = row[0]
                 object       = device.canopen_dictionary[index]
                 object.get_data()
 
                 if object.objcode == 8 or object.objcode == 9:
-                    for sub in range(0, object.max_subindices + 1):
-                        element      = object.subindices[sub]
-                        element.get_data()
-                        if element.data_type != 0:
-                            sub_iter = search([row, ], match_func, ([0, sub], ))
-                            if sub_iter is None:
-                                self.treestore_dictionary.insert(iter, -1, [sub, "", device])
+                    sub_iter = search([row, ], match_func, ([0, 0], ))
+                    if sub_iter is None:
+                        self.treestore_dictionary.insert(iter, -1, [0, "", device])
+
+                    if self.treeview_dictionary.row_expanded(path):
+                        for sub in range(1, object.max_subindices + 1):
+                            element      = object.subindices[sub]
+                            element.get_data()
+                            if element.data_type != 0:
+                                sub_iter = search([row, ], match_func, ([0, sub], ))
+                                if sub_iter is None:
+                                    self.treestore_dictionary.insert(iter, -1, [sub, "", device])
 
                 cell.set_property("text", object.name)
             return True
@@ -118,18 +124,24 @@ class canopen_treeview(object):
                 else:
                     cell.set_property("text", "unknown 0x%X" % element.data_type)
             else:
+                path         = store.get_path(iter)
                 index        = row[0]
                 object       = device.canopen_dictionary[index]
                 object.get_data()
 
                 if object.objcode == 8 or object.objcode == 9:
-                    for sub in range(0, object.max_subindices + 1):
-                        element      = object.subindices[sub]
-                        element.get_data()
-                        if element.data_type != 0:
-                            sub_iter = search([row, ], match_func, ([0, sub], ))
-                            if sub_iter is None:
-                                self.treestore_dictionary.insert(iter, -1, [sub, "", device])
+                    sub_iter = search([row, ], match_func, ([0, 0], ))
+                    if sub_iter is None:
+                        self.treestore_dictionary.insert(iter, -1, [0, "", device])
+
+                    if self.treeview_dictionary.row_expanded(path):
+                        for sub in range(1, object.max_subindices + 1):
+                            element      = object.subindices[sub]
+                            element.get_data()
+                            if element.data_type != 0:
+                                sub_iter = search([row, ], match_func, ([0, sub], ))
+                                if sub_iter is None:
+                                    self.treestore_dictionary.insert(iter, -1, [sub, "", device])
 
                 if object.data_type in canopen_datatypes:
                     cell.set_property("text", canopen_datatypes[object.data_type])
@@ -162,18 +174,24 @@ class canopen_treeview(object):
                 else:
                     cell.set_property("text", "unknown 0x%X" % element.objcode)
             else:
+                path         = store.get_path(iter)
                 index        = row[0]
                 object       = device.canopen_dictionary[index]
                 object.get_data()
 
                 if object.objcode == 8 or object.objcode == 9:
-                    for sub in range(0, object.max_subindices + 1):
-                        element      = object.subindices[sub]
-                        element.get_data()
-                        if element.data_type != 0:
-                            sub_iter = search([row, ], match_func, ([0, sub], ))
-                            if sub_iter is None:
-                                self.treestore_dictionary.insert(iter, -1, [sub, "", device])
+                    sub_iter = search([row, ], match_func, ([0, 0], ))
+                    if sub_iter is None:
+                        self.treestore_dictionary.insert(iter, -1, [0, "", device])
+
+                    if self.treeview_dictionary.row_expanded(path):
+                        for sub in range(1, object.max_subindices + 1):
+                            element      = object.subindices[sub]
+                            element.get_data()
+                            if element.data_type != 0:
+                                sub_iter = search([row, ], match_func, ([0, sub], ))
+                                if sub_iter is None:
+                                    self.treestore_dictionary.insert(iter, -1, [sub, "", device])
 
                 if object.objcode in canopen_objcodes:
                     cell.set_property("text", canopen_objcodes[object.objcode])
