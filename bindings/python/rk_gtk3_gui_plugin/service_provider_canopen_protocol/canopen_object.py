@@ -32,7 +32,7 @@ import traceback
 import logging
 
 
-from .canopen_element import *
+from .canopen_element import canopen_element
 
 logger = logging.getLogger()
 

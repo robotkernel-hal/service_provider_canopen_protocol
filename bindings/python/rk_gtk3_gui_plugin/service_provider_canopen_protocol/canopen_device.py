@@ -20,7 +20,7 @@ from __future__ import print_function
 from __future__ import absolute_import
 
 from builtins import object
-from .canopen_object import *
+from .canopen_object import canopen_object
 import helpers
 import datetime, copy
 import logging
