@@ -43,6 +43,12 @@ class canopen_device(helpers.svc_wrapper):
                 "{}.{}.{}.canopen_protocol".format(service_prefix, modname, devname))
 
         self.service_prefix = service_prefix # beware, self.prefix is used in the parent class
+        self.mailbox = helpers.svc_wrapper(service_prefix + ".mailbox",
+                                           modname,
+                                           devname)
+        self.eeprom = helpers.svc_wrapper(service_prefix + ".eeprom",
+                                          modname,
+                                          devname)
         self.modname = modname
         self.devname = devname
         self.widget = widget
@@ -99,8 +105,11 @@ class canopen_device(helpers.svc_wrapper):
             logger.debug("calling service {service_prefix}.{modname}.{devname}.canopen_protocol::object_dictionary_list (service_prefix={service_prefix}, modname={modname}, devname={devname}".format(service_prefix=self.service_prefix,
                                                                                                                                                               modname=self.modname,
                                                                                                                                                               devname=self.devname))
-            self.svc_object_dictionary_list.call()
-            canopen_dictionary = self.svc_object_dictionary_list.resp.indices
+            self.mailbox.svc_object_dictionary_list.call()
+            self.eeprom.svc_object_dictionary_list.call()
+            canopen_dictionary = self.mailbox.svc_object_dictionary_list.resp.indices
+            canopen_dictionary.update(self.eeprom.svc_object_dictionary_list.resp.indices)
+            
             for iter, idn in enumerate(canopen_dictionary):
                 self.canopen_dictionary[idn] = canopen_object(self, idn)
         return list(self.canopen_dictionary.keys())
