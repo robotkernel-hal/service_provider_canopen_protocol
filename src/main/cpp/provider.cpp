@@ -176,6 +176,28 @@ abort_code_map_t abort_code_map = {
     { 0x08000023, "Object dictionary dynamic generation fails or no object dictionary is present" },
     { 0xffffffff, "Unknown" } };
 
+string to_unicode(const char* input, int input_len) {
+    stringstream ss;
+    for(const char* cp = input; cp != input + input_len; cp++) {
+        if((strchr(" ,.*:;/_-+=[](){}^!?$", *cp) || isdigit((unsigned char)*cp) || isalpha((unsigned char)*cp)) && (unsigned char)*cp <= 127 && *cp) {
+            ss << *cp;
+            continue;
+        }
+        if(*cp == '\r') ss << "\\r";
+        else if(*cp == '\n') ss << "\\n";
+        else if(*cp == '<') ss << "<";
+        else if(*cp == '>') ss << ">";
+        else if(*cp == '\t') ss << "\\t";
+        else if(*cp == '\\') ss << "\\\\";
+        else if(*cp == '\'') ss << "\\'";
+        else if(*cp == '"') ss << "\"";
+        else if(*cp == '|') ss << "|";
+        else if(*cp == '%') ss << "%";
+        else { }
+    }	
+    return ss.str();
+}
+
 string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
     if (    (   ((index & 0x1600) == 0x1600) ||
                 ((index & 0x1A00) == 0x1A00)) &&
@@ -231,7 +253,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
         case ECT_BIT8:
             return format_string("0x%X", *(uint8_t *)usdo);
         case ECT_VISIBLE_STRING:
-            return string((char *)usdo, l);
+            return to_unicode((char *)usdo, l);
         default:
         case ECT_OCTET_STRING: {
             string ans = "[ ";
