@@ -55,12 +55,16 @@ class canopen_device(helpers.svc_wrapper):
         self.svc_read_object.call()
         return self.svc_read_object.resp
 
+    # FIXME: this is probably duplicate to the canopen_element method,
+    # and is otherwise unused
     def read_element(self, index, sub_index):
         self.svc_read_element.req.index = index
         self.svc_read_element.req.sub_index = sub_index
         self.svc_read_element.call()
         return self.svc_read_element.resp
 
+    # FIXME: This one is used, and should perhaps moved to the
+    # canopen_element class.
     def write_element(self, index, sub_index, value):
         self.svc_write_element.req.index = index
         self.svc_write_element.req.sub_index = sub_index
@@ -92,7 +96,7 @@ class canopen_device(helpers.svc_wrapper):
 
     def list_dictionary(self):
         if not len(self.canopen_dictionary): #only upon first call
-            logger.debug("calling service {service_prefix}.{modname}.{devname}.canopen_protocol::object_disctionary_list (service_prefix={service_prefix}, modname={modname}, devname={devname}".format(service_prefix=self.service_prefix,
+            logger.debug("calling service {service_prefix}.{modname}.{devname}.canopen_protocol::object_dictionary_list (service_prefix={service_prefix}, modname={modname}, devname={devname}".format(service_prefix=self.service_prefix,
                                                                                                                                                               modname=self.modname,
                                                                                                                                                               devname=self.devname))
             self.svc_object_dictionary_list.call()
