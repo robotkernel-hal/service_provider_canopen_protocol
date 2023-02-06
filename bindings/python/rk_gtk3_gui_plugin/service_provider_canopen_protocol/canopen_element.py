@@ -69,6 +69,7 @@ class canopen_element(object):
             return False
 
         #non-blocking read on data, with callback (see get_data)
+        # FIXME: This is duplicated code in canopen_device.read_element()
         self.canopen_device.svc_call_pending = True
         self.canopen_device.svc_read_element.req.index = self.index
         self.canopen_device.svc_read_element.req.sub_index = self.sub_index

@@ -55,7 +55,7 @@ class canopen_device(helpers.svc_wrapper):
         self.svc_read_object.call()
         return self.svc_read_object.resp
 
-    # FIXME: this is probably duplicate to the canopen_element method,
+    # FIXME: this is probably duplicate to the canopen_element.read() method,
     # and is otherwise unused
     def read_element(self, index, sub_index):
         self.svc_read_element.req.index = index
