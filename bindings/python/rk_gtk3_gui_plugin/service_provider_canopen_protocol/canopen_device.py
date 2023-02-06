@@ -56,7 +56,7 @@ class canopen_device(helpers.svc_wrapper):
         return self.svc_read_object.resp
 
     # FIXME: this is probably duplicate to the canopen_element.read() method,
-    # and is otherwise unused
+    # and is otherwise unused - it probably belongs here
     def read_element(self, index, sub_index):
         self.svc_read_element.req.index = index
         self.svc_read_element.req.sub_index = sub_index
