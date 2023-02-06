@@ -33,6 +33,8 @@ import logging
 
 logger = logging.getLogger()
 
+# FIXME: rename identifiers "object" and "iter" since they
+# normally mean other things in Python3.
 
 class canopen_treeview(object):
     def __init__(self):
