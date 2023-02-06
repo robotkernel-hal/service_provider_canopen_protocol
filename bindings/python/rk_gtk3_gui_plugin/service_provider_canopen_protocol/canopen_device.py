@@ -101,6 +101,8 @@ class canopen_device(helpers.svc_wrapper):
                                                                                                                                                               devname=self.devname))
             self.svc_object_dictionary_list.call()
             canopen_dictionary = self.svc_object_dictionary_list.resp.indices
+            # FIXME: iter in the next line has a misleading name and
+            # is also not used, should be deleted
             for iter, idn in enumerate(canopen_dictionary):
                 self.canopen_dictionary[idn] = canopen_object(self, idn)
         return list(self.canopen_dictionary.keys())
