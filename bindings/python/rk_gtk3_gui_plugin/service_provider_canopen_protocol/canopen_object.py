@@ -77,8 +77,8 @@ class canopen_object(object):
                 try:
                     self.name = data.name.decode('latin1')
                 except AttributeError as exc:
-                    logger.warning("canopen_object.getdata(): data.name field"
-                                   " is already of type string, using field directly")
+                    logger.info("canopen_object.getdata(): data.name field"
+                                " is already of type string, using field directly")
                     self.name = data.name
                     
                 self.objcode = data.objcode

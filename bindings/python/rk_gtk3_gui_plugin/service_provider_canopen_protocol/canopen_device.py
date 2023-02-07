@@ -95,12 +95,19 @@ class canopen_device(helpers.svc_wrapper):
         #if not ans.error_message_len
 
     def list_dictionary(self):
+        if not (self.devname.endswith(".mailbox") or self.devname.endswith(".eeprom")):
+            return []
+        
         if not len(self.canopen_dictionary): #only upon first call
             logger.debug("calling service {service_prefix}.{modname}.{devname}.canopen_protocol::object_dictionary_list (service_prefix={service_prefix}, modname={modname}, devname={devname}".format(service_prefix=self.service_prefix,
                                                                                                                                                               modname=self.modname,
                                                                                                                                                               devname=self.devname))
-            self.svc_object_dictionary_list.call()
-            canopen_dictionary = self.svc_object_dictionary_list.resp.indices
+            try:
+                self.svc_object_dictionary_list.call()
+                canopen_dictionary = self.svc_object_dictionary_list.resp.indices
+            except helpers.ServiceNotFoundException:
+                canopen_dicitonary = []
+                logger.warning("no dictionary found for device {}, assuming empty dictionary".format(self.devname))
             # FIXME: iter in the next line has a misleading name and
             # is also not used, should be deleted
             for iter, idn in enumerate(canopen_dictionary):
