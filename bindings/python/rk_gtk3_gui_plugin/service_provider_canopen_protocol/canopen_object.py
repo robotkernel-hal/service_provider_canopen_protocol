@@ -66,41 +66,28 @@ class canopen_object(object):
         return (self.idn, self.name, self.value, self.valid)
 
     def read(self):
-        def cb_read(starttime):
-            #callback after canopen returned with data
-            try:
-                self.canopen_device.svc_read_object.utf8_decode_char_fields(False)
+        
+        def cb_read(data):
+            
+            #callback after canopen_device.read_object() got data
+            #list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
+            for x in data.__dict__:
+                setattr(self, x, getattr(data, x))
                 
-                data = self.canopen_device.svc_read_object.resp
-                #list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
-                for x in data.__dict__:
-                    setattr(self, x, getattr(data, x))
-                try:
-                    self.name = data.name.decode('latin1')
-                except AttributeError as exc:
-                    logger.info("canopen_object.getdata(): data.name field"
-                                " is already of type string, using field directly")
-                    self.name = data.name
-                    
-                self.objcode = data.objcode
-                self.max_subindices = data.max_subindices
-                self.subindices.clear()
-                for i in range(0, self.max_subindices+1):
-                    self.subindices[i] = canopen_element(self.canopen_device, self.idn, i)
-                self.value = 0
-                self.valid = True
-                self.canopen_device.svc_call_pending = False
-                self.canopen_device.queue_draw()
-            except:
-                print(traceback.format_exc())
-            return False
+            try:
+                self.name = data.name.decode('latin1')
+            except AttributeError as exc:
+                logger.info("canopen_object.getdata(): data.name field"
+                            " is already of type string, using field directly")
+                self.name = data.name
+                
+            self.objcode = data.objcode
+            self.max_subindices = data.max_subindices
+            self.subindices.clear()
+            for i in range(0, self.max_subindices+1):
+                self.subindices[i] = canopen_element(self.canopen_device, self.idn, i)
+            self.value = 0
+            self.valid = True
 
-        #non-blocking read on data, with callback (see get_data)
-        self.canopen_device.svc_call_pending = True
-        self.canopen_device.svc_read_object.req.index = self.idn
-        self.canopen_device.svc_read_object.call_async()
-        # old GTK2 code: set async finish handler
-        #self.canopen_device.svc_read_object.gobject_on_async_finish(cb_read, time.time())
-        # new GTK2 code
-        self.canopen_device.svc_read_object.mainloop_on_async_finish(self.canopen_device._mainloop, cb_read, time.time())
 
+        self.canopen_device.read_object(self.idn, callback=cb_read)

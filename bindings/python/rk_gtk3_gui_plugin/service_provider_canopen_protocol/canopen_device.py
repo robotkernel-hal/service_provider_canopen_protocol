@@ -67,6 +67,33 @@ class canopen_device(helpers.svc_wrapper):
     # FIXME: This one is used, and should perhaps moved to the
     # canopen_element class.
 
+    def read_object(self, index, callback=None):
+
+        #non-blocking read on data, with callback (see get_data)
+        self.svc_call_pending = True
+        self.svc_read_object.req.index = index
+        
+        def cb_read_object(_time):
+            try:
+                self.svc_read_object.utf8_decode_char_fields(False)
+                
+                data = self.svc_read_object.resp
+                if callback is not None:
+                    callback(data)
+                    
+                self.svc_call_pending = False
+                self.queue_draw()
+            except:
+                print(traceback.format_exc())
+            return False
+
+        # old GTK2 code: set async finish handler
+        #self.svc_read_object.gobject_on_async_finish(cb_read, time.time())
+        # new GTK2 code
+        self.svc_read_object.call_async()
+        self.svc_read_object.mainloop_on_async_finish(self._mainloop, cb_read_object, time.time())
+
+
     def read_element(self, index, sub_index, callback=None):
         #non-blocking read on data, with callback (see get_data)
         # FIXME: This is duplicated code in canopen_device.read_element()
