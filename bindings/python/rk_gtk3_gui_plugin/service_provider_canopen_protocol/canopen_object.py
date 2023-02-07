@@ -72,8 +72,9 @@ class canopen_object(object):
                 self.canopen_device.svc_read_object.utf8_decode_char_fields(False)
                 
                 data = self.canopen_device.svc_read_object.resp
-                # FIXME: Replace this with a loop
-                list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
+                #list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
+                for x in data.__dict__:
+                    setattr(self, x, getattr(data, x))
                 try:
                     self.name = data.name.decode('latin1')
                 except AttributeError as exc:
