@@ -108,9 +108,7 @@ class canopen_device(helpers.svc_wrapper):
             except helpers.ServiceNotFoundException:
                 canopen_dicitonary = []
                 logger.warning("no dictionary found for device {}, assuming empty dictionary".format(self.devname))
-            # FIXME: iter in the next line has a misleading name and
-            # is also not used, should be deleted
-            for iter, idn in enumerate(canopen_dictionary):
+            for idn in list(canopen_dictionary):
                 self.canopen_dictionary[idn] = canopen_object(self, idn)
         return list(self.canopen_dictionary.keys())
 

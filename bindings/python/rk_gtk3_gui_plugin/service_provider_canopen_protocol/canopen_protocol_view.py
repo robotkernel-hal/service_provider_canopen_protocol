@@ -58,8 +58,8 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         view.set_headers_visible(True)
 
         # ------------------ index column ------------------
-        def cb_datetime(column, cell, store, iter):
-            row = store[iter]
+        def cb_datetime(column, cell, store, tree_iter):
+            row = store[tree_iter]
             emergency = row[0]
             cell.set_property("xalign", 0.0)
             cell.set_property('text', str(row[0].timestamp))
@@ -70,8 +70,8 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         column.set_sizing(Gtk.TreeViewColumnSizing.GROW_ONLY)
 
         # ------------------ error_code column ------------------
-        def cb_error_code(column, cell, store, iter):
-            row = store[iter]
+        def cb_error_code(column, cell, store, tree_iter):
+            row = store[tree_iter]
             emergency = row[0]
             cell.set_property("xalign", 0.0)
             cell.set_property('text', "0x%04X" % (row[0].error_code))
@@ -82,8 +82,8 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         column.set_sizing(Gtk.TreeViewColumnSizing.GROW_ONLY)
 
         # ------------------ error_register column ------------------
-        def cb_error_register(column, cell, store, iter):
-            row = store[iter]
+        def cb_error_register(column, cell, store, tree_iter):
+            row = store[tree_iter]
             cell.set_property("xalign", 0.0)
             cell.set_property('text', "0x%04X" % (row[0].error_register))
             return True
@@ -93,8 +93,8 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         column.set_sizing(Gtk.TreeViewColumnSizing.GROW_ONLY)
 
         # ------------------ data column ------------------
-        def cb_data(column, cell, store, iter):
-            row = store[iter]
+        def cb_data(column, cell, store, tree_iter):
+            row = store[tree_iter]
             cell.set_property("xalign", 0.0)
             cell.set_property('text', ', '.join(["%02X" % x for x in row[0].data]))
             return True
