@@ -19,7 +19,6 @@ along with Robotkernel-GUI.  If not, see <http://www.gnu.org/licenses/>.
 
 from builtins import map
 from builtins import object
-import time
 import gi
 
 
@@ -47,7 +46,7 @@ class canopen_element(object):
         return False
 
     def get_data(self, force_update=False):
-        # get data if nesecary from canopen bus,
+       # get data if necessary from canopen bus,
         # this will be called twice by the treeview to get name and value seperated
         if not self.valid or self.name is None or self.value is None:
             if not self.canopen_device.svc_call_pending:
@@ -58,28 +57,13 @@ class canopen_element(object):
         return (self.name, self.value, self.valid)
 
     def read(self):
-        def cb_read(starttime):
-            # callback after canopen returned with data
-            data = self.canopen_device.svc_read_element.resp
+        def cb_read(data):
+            print("cb_read(): callback called!")
             #list(map(lambda x: setattr(self, x, getattr(data, x)), data.__dict__))
             for x in data.__dict__:
                 setattr(self, x, getattr(data, x))
             self.valid = True
-            self.canopen_device.svc_call_pending = False
-            self.canopen_device.queue_draw()
             return False
-
-        #non-blocking read on data, with callback (see get_data)
-        # FIXME: This is duplicated code in canopen_device.read_element()
-        # The code related to canopen_device should probably
-        # be moved to a read_element_async() method there.
-        self.canopen_device.svc_call_pending = True
-        self.canopen_device.svc_read_element.req.index = self.index
-        self.canopen_device.svc_read_element.req.sub_index = self.sub_index
-        self.canopen_device.svc_read_element.call_async()
         
-        # experimental: adapt to new LN API for GTK3
-        #self.canopen_device.svc_read_element.gobject_on_async_finish(cb_read, time.time())
-
-        self.canopen_device.svc_read_element.mainloop_on_async_finish(self.canopen_device._mainloop, cb_read, time.time())
+        self.canopen_device.read_element(self.index, self.sub_index, callback=cb_read)
 

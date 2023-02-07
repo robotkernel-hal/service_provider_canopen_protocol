@@ -22,6 +22,7 @@ from __future__ import absolute_import
 from builtins import object
 from .canopen_object import canopen_object
 import helpers
+import time
 import datetime, copy
 import logging
 
@@ -65,6 +66,33 @@ class canopen_device(helpers.svc_wrapper):
 
     # FIXME: This one is used, and should perhaps moved to the
     # canopen_element class.
+
+    def read_element(self, index, sub_index, callback=None):
+        #non-blocking read on data, with callback (see get_data)
+        # FIXME: This is duplicated code in canopen_device.read_element()
+        # The code related to canopen_device should probably
+        # be moved to a read_element_async() method there.
+        self.svc_call_pending = True
+        self.svc_read_element.req.index = index
+        self.svc_read_element.req.sub_index = sub_index
+
+        def cb_read_element(_time):
+            # callback after canopen returned with data
+            data = self.svc_read_element.resp
+            print("cb_read(): calling callback[1]!")
+            if callback is not None:
+                print("cb_read(): calling callback[2]!")
+                callback(data)
+            self.svc_call_pending = False
+            self.queue_draw()            
+        
+        # experimental: adapt to new LN API for GTK3
+        #self.svc_read_element.gobject_on_async_finish(cb_read, time.time())
+
+        self.svc_read_element.call_async()
+        self.svc_read_element.mainloop_on_async_finish(self._mainloop, cb_read_element, time.time())
+
+    
     def write_element(self, index, sub_index, value):
         self.svc_write_element.req.index = index
         self.svc_write_element.req.sub_index = sub_index
