@@ -70,6 +70,8 @@ class canopen_element(object):
 
         #non-blocking read on data, with callback (see get_data)
         # FIXME: This is duplicated code in canopen_device.read_element()
+        # The code related to canopen_device should probably
+        # be moved to a read_element_async() method there.
         self.canopen_device.svc_call_pending = True
         self.canopen_device.svc_read_element.req.index = self.index
         self.canopen_device.svc_read_element.req.sub_index = self.sub_index
