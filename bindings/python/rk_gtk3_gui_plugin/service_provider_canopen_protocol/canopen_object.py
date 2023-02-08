@@ -61,7 +61,7 @@ class canopen_object(object):
             if not self.canopen_device.svc_call_pending:
                 self.read()
             elif not self.fd_get_data:
-                self.fd_get_data = GObject.timeout_add(10, self.update_callback, (force_update))
+                self.fd_get_data = GObject.timeout_add(5, self.update_callback, (force_update))
 
         return (self.idn, self.name, self.value, self.valid)
 

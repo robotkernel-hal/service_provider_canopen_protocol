@@ -28,6 +28,11 @@ import logging
 
 logger = logging.getLogger()
 
+import gi
+gi.require_version('Gtk', '3.0')
+gi.require_version('GLib', '2.0')
+from gi.repository import GObject
+
 class canopen_emergency(object):
     def __init__(self, timestamp, error_code, error_register, data):
         self.timestamp = timestamp
@@ -82,7 +87,8 @@ class canopen_device(helpers.svc_wrapper):
                     callback(data)
                     
                 self.svc_call_pending = False
-                self.queue_draw()
+                #self.queue_draw()
+                GObject.timeout_add(20, self.queue_draw)
             except:
                 print(traceback.format_exc())
             return False
@@ -111,7 +117,8 @@ class canopen_device(helpers.svc_wrapper):
                 print("cb_read(): calling callback[2]!")
                 callback(data)
             self.svc_call_pending = False
-            self.queue_draw()            
+            #self.queue_draw()
+            GObject.timeout_add(20, self.queue_draw)
         
         # experimental: adapt to new LN API for GTK3
         #self.svc_read_element.gobject_on_async_finish(cb_read, time.time())
@@ -174,3 +181,4 @@ class canopen_device(helpers.svc_wrapper):
     def queue_draw(self):
         self.widget.queue_draw()
 
+    
