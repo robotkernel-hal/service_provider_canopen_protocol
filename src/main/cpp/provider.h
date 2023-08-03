@@ -25,27 +25,28 @@
 #ifndef __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__
 #define __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__
 
+// Standard includes
 #include <string.h>
 
+// Robotkernel includes
 #include "robotkernel/service_provider_base.h"
 #include "robotkernel/service_provider_intf.h"
 #include "robotkernel/service.h"
 #include "robotkernel/kernel.h"
 #include "robotkernel/log_base.h"
 
+// Service provider includes
 #include "service_provider/canopen_protocol/base.h"
+#include "service_definitions.h"
 
 namespace service_provider {
-#if EMACS
-}
-#endif
-
 namespace canopen_protocol {
 
 // forward declaration
 class handler;
 
-class provider : public robotkernel::service_provider_base<handler, base> 
+class provider : 
+    public robotkernel::service_provider_base<handler, base>
 {
     public:
         //! default construction
@@ -55,7 +56,13 @@ class provider : public robotkernel::service_provider_base<handler, base>
             : service_provider_base(name, "canopen_protocol") {};
 };
 
-class handler : public robotkernel::log_base
+class handler : 
+    public robotkernel::log_base,
+    public svc_base_read_element,
+    public svc_base_write_element,
+    public svc_base_read_object,
+    public svc_base_object_dictionary_list,
+    public svc_base_pop_emergency_message
 {
     public:
         typedef std::shared_ptr<service_provider::canopen_protocol::base> sp_cp_base_t;
@@ -67,62 +74,43 @@ class handler : public robotkernel::log_base
         //! handler destruction
         ~handler();
 
-        static const std::string service_definition_read_element;
-        static const std::string service_definition_read_object;
-        static const std::string service_definition_write_element;
-        static const std::string service_definition_object_dictionary_list;
-        static const std::string service_definition_pop_emergency_message;
-
-        //! service callback read element
+        //! svc_read_element
         /*!
-         * \param request service request data
-         * \parma response service response data
-         * \return success
+         * \param[in]   req     Service request data.
+         * \param[out]  resp    Service response data.
          */
-        int service_read_element(const robotkernel::service_arglist_t& request, 
-                robotkernel::service_arglist_t& response);
+        virtual void svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp);
 
-        //! service callback read object
+        //! svc_read_object
         /*!
-         * \param request service request data
-         * \parma response service response data
-         * \return success
+         * \param[in]   req     Service request data.
+         * \param[out]  resp    Service response data.
          */
-        int service_read_object(const robotkernel::service_arglist_t& request, 
-                robotkernel::service_arglist_t& response);
+        virtual void svc_read_object(const struct svc_req_read_object& req, struct svc_resp_read_object& resp);
 
-        //! service callback write element
+        //! svc_write_element
         /*!
-         * \param request service request data
-         * \parma response service response data
-         * \return success
+         * \param[in]   req     Service request data.
+         * \param[out]  resp    Service response data.
          */
-        int service_write_element(const robotkernel::service_arglist_t& request, 
-                robotkernel::service_arglist_t& response);
+        virtual void svc_write_element(const struct svc_req_write_element& req, struct svc_resp_write_element& resp);
 
-        //! service callback list object dictionary
+        //! svc_object_dictionary_list
         /*!
-         * \param request service request data
-         * \parma response service response data
-         * \return success
+         * \param[in]   req     Service request data.
+         * \param[out]  resp    Service response data.
          */
-        int service_object_dictionary_list(const robotkernel::service_arglist_t& request, 
-                robotkernel::service_arglist_t& response);
+        virtual void svc_object_dictionary_list(const struct svc_req_object_dictionary_list& req, struct svc_resp_object_dictionary_list& resp);
 
-        //! service callback pop next emergency messages
+        //! svc_pop_emergency_message
         /*!
-         * \param request service request data
-         * \parma response service response data
-         * \return success
+         * \param[in]   req     Service request data.
+         * \param[out]  resp    Service response data.
          */
-        int service_pop_emergency_message(const robotkernel::service_arglist_t& request, 
-                robotkernel::service_arglist_t& response);
+        virtual void svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp);
 };
-} // namepace canopen_protocol
 
-#if EMACS
-{
-#endif
+} // namepace canopen_protocol
 } // namespace service_provider
 
 #endif // __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__

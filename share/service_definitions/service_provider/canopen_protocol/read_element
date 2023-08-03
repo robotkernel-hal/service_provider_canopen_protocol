@@ -1,4 +1,4 @@
-name: service_provider_canopen_protocol/read_element
+name: service_provider/canopen_protocol/read_element
 request:
 - uint16_t: index
 - uint8_t: sub_index

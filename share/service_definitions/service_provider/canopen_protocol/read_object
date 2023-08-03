@@ -1,4 +1,4 @@
-name: service_provider_canopen_protocol/read_object
+name: service_provider/canopen_protocol/read_object
 request:
 - uint16_t: index
 response:

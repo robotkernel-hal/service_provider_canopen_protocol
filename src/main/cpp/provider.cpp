@@ -40,12 +40,6 @@ using namespace robotkernel;
 using namespace service_provider;
 using namespace string_util;
 
-const std::string service_provider::canopen_protocol::handler::service_definition_read_element = robotkernel_service_provider_canopen_protocol_read_element_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_read_object = robotkernel_service_provider_canopen_protocol_read_object_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_write_element = robotkernel_service_provider_canopen_protocol_write_element_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_object_dictionary_list = robotkernel_service_provider_canopen_protocol_object_dictionary_list_service_definition;
-const std::string service_provider::canopen_protocol::handler::service_definition_pop_emergency_message = robotkernel_service_provider_canopen_protocol_pop_emergency_message_service_definition;
-
 /** Ethercat data types */
 typedef enum {
    ECT_BOOLEAN         = 0x0001,
@@ -274,162 +268,94 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
 canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
     : log_base(req->owner, "canopen_protocol", req->device_name) 
 {
-    robotkernel::kernel& k = *robotkernel::kernel::get_instance();
-
     _instance = std::dynamic_pointer_cast<service_provider::canopen_protocol::base>(req);
     if (!_instance)
         throw str_exception("wrong base class");
 
-    k.add_service(req->owner, _instance->device_name + ".read_element", 
-            service_definition_read_element,
-            std::bind(&canopen_protocol::handler::service_read_element, this, _1, _2));
-    k.add_service(req->owner, _instance->device_name + ".read_object", 
-            service_definition_read_object,
-            std::bind(&canopen_protocol::handler::service_read_object, this, _1, _2));
-    k.add_service(req->owner, _instance->device_name + ".write_element", 
-            service_definition_write_element,
-            std::bind(&canopen_protocol::handler::service_write_element, this, _1, _2));
-    k.add_service(req->owner, _instance->device_name + ".object_dictionary_list", 
-            service_definition_object_dictionary_list,
-            std::bind(&canopen_protocol::handler::service_object_dictionary_list, 
-                this, _1, _2));
-    k.add_service(req->owner, _instance->device_name + ".pop_emergency_message", 
-            service_definition_pop_emergency_message,
-            std::bind(&canopen_protocol::handler::service_pop_emergency_message, 
-                this, _1, _2));
+    add_svc_read_element(req->owner, _instance->device_name + ".read_element");
+    add_svc_read_object(req->owner, _instance->device_name + ".read_object");
+    add_svc_write_element(req->owner, _instance->device_name + ".write_element");
+    add_svc_object_dictionary_list(req->owner, _instance->device_name + ".object_dictionary_list");
+    add_svc_pop_emergency_message(req->owner, _instance->device_name + ".pop_emergency_message");
 }
 
-canopen_protocol::handler::~handler() {
-    robotkernel::kernel& k = *robotkernel::kernel::get_instance();
-    k.remove_service(_instance->owner, _instance->device_name + ".read_element");
-    k.remove_service(_instance->owner, _instance->device_name + ".read_object");
-    k.remove_service(_instance->owner, _instance->device_name + ".write_element");
-    k.remove_service(_instance->owner, _instance->device_name + ".object_dictionary_list");
-    k.remove_service(_instance->owner, _instance->device_name + ".pop_emergency_message");
-}
+canopen_protocol::handler::~handler() {}
 
-//! service callback read element
+//! svc_read_element
 /*!
- * \param request service request data
- * \parma response service response data
- * \return success
+ * \param[in]   req     Service request data.
+ * \param[out]  resp    Service response data.
  */
-int canopen_protocol::handler::service_read_element(
-    const service_arglist_t& request, service_arglist_t& response) {
-    // request data
-#define READ_ELEMENT_REQ_INDEX      0
-#define READ_ELEMENT_REQ_SUB_INDEX  1
-    uint16_t index    = request[READ_ELEMENT_REQ_INDEX];
-    uint8_t sub_index = request[READ_ELEMENT_REQ_SUB_INDEX];
-
-    std::string default_value = "", min_value = "", max_value = "", 
-        resp_value = "", error_message = "";
+void canopen_protocol::handler::svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp) {
     canopen_protocol::element_description_t elem_desc;            
     canopen_protocol::element_t value;
     
     try {
-        _instance->get_element_description(index, sub_index, elem_desc);
+        _instance->get_element_description(req.index, req.sub_index, elem_desc);
+
+        resp.name       = elem_desc.name;
+        resp.value_info = elem_desc.value_info;
+        resp.data_type  = elem_desc.data_type;
+        resp.bit_length = elem_desc.bit_length;
+        resp.obj_access = elem_desc.obj_access;
+        resp.unit       = elem_desc.unit;
 
         // decode data
-        if (elem_desc.default_value.size() > 0)
-            default_value = value_2_string(&elem_desc.default_value[0], 
-                    elem_desc.default_value.size(), elem_desc.data_type, index);
-        if (elem_desc.min_value.size() > 0)
-            min_value = value_2_string(&elem_desc.min_value[0], 
-                    elem_desc.min_value.size(), elem_desc.data_type, index);
-        if (elem_desc.max_value.size() > 0)
-            max_value = value_2_string(&elem_desc.max_value[0], 
-                    elem_desc.max_value.size(), elem_desc.data_type, index);
+        if (elem_desc.default_value.size() > 0) {
+            resp.default_value = value_2_string(&elem_desc.default_value[0], 
+                    elem_desc.default_value.size(), elem_desc.data_type, req.index);
+        }
 
+        if (elem_desc.min_value.size() > 0) {
+            resp.min_value = value_2_string(&elem_desc.min_value[0], 
+                    elem_desc.min_value.size(), elem_desc.data_type, req.index);
+        }
+
+        if (elem_desc.max_value.size() > 0) {
+            resp.max_value = value_2_string(&elem_desc.max_value[0], 
+                    elem_desc.max_value.size(), elem_desc.data_type, req.index);
+        }
     } catch (std::exception& e) {
-        error_message = e.what();
+        resp.error_message = e.what();
     }
 
     try {
-        _instance->read_element(index, sub_index, value);
+        _instance->read_element(req.index, req.sub_index, value);
 
         // decode value
-        resp_value = value_2_string(
-                &value[0], value.size(), elem_desc.data_type, index);
+        resp.value = value_2_string(&value[0], value.size(), elem_desc.data_type, req.index);
     } catch (sdo_abort_exception& e) {
-        error_message = format_string("got sdo abort : %08X\n", e.abort_code);
+        resp.error_message = format_string("got sdo abort : %08X\n", e.abort_code);
     } catch (std::exception& e) {
-        error_message += e.what();
+        resp.error_message += e.what();
     }
-
-    // response data
-#define READ_ELEMENT_RESP_NAME          0
-#define READ_ELEMENT_RESP_VALUE_INFO    1
-#define READ_ELEMENT_RESP_DATA_TYPE     2
-#define READ_ELEMENT_RESP_BIT_LENGTH    3
-#define READ_ELEMENT_RESP_OBJ_ACCESS    4
-#define READ_ELEMENT_RESP_UNIT          5
-#define READ_ELEMENT_RESP_DEFAULT_VALUE 6
-#define READ_ELEMENT_RESP_MIN_VALUE     7
-#define READ_ELEMENT_RESP_MAX_VALUE     8
-#define READ_ELEMENT_RESP_VALUE         9
-#define READ_ELEMENT_RESP_ERROR_MESSAGE 10
-    response.resize(11);
-    response[READ_ELEMENT_RESP_NAME]            = elem_desc.name;
-    response[READ_ELEMENT_RESP_VALUE_INFO]      = elem_desc.value_info;
-    response[READ_ELEMENT_RESP_DATA_TYPE]       = elem_desc.data_type;
-    response[READ_ELEMENT_RESP_BIT_LENGTH]      = elem_desc.bit_length;
-    response[READ_ELEMENT_RESP_OBJ_ACCESS]      = elem_desc.obj_access;
-    response[READ_ELEMENT_RESP_UNIT]            = elem_desc.unit;
-    response[READ_ELEMENT_RESP_DEFAULT_VALUE]   = default_value;
-    response[READ_ELEMENT_RESP_MIN_VALUE]       = min_value;
-    response[READ_ELEMENT_RESP_MAX_VALUE]       = max_value;
-    response[READ_ELEMENT_RESP_VALUE]           = resp_value;
-    response[READ_ELEMENT_RESP_ERROR_MESSAGE]   = error_message;
-
-    return 0;
 }
 
-//! service callback read object
+//! svc_read_object
 /*!
- * \param request service request data
- * \parma response service response data
- * \return success
+ * \param[in]   req     Service request data.
+ * \param[out]  resp    Service response data.
  */
-int canopen_protocol::handler::service_read_object(const service_arglist_t& request, 
-        service_arglist_t& response) {
-    // request data
-#define READ_OBJECT_REQ_INDEX   0
-    uint16_t index = request[READ_OBJECT_REQ_INDEX];
-
-    std::string error_message = "";
+void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object& req, struct svc_resp_read_object& resp) {
     canopen_protocol::object_description_t obj_desc;
 
     try {
-        _instance->get_object_description(index, obj_desc);
+        _instance->get_object_description(req.index, obj_desc);
+        resp.data_type      = obj_desc.data_type;
+        resp.objcode        = obj_desc.object_code;
+        resp.max_subindices = obj_desc.max_subindices;
+        resp.name           = obj_desc.name;
     } catch (std::exception& e) {
-        error_message = e.what();
+        resp.error_message = e.what();
     }
-
-    // response data
-#define READ_OBJECT_RESP_DATA_TYPE      0
-#define READ_OBJECT_RESP_OBJCODE        1
-#define READ_OBJECT_RESP_MAX_SUBINDICES 2
-#define READ_OBJECT_RESP_NAME           3
-#define READ_OBJECT_RESP_ERROR_MESSAGE  4
-    response.resize(5);
-    response[READ_OBJECT_RESP_DATA_TYPE]        = obj_desc.data_type;
-    response[READ_OBJECT_RESP_OBJCODE]          = obj_desc.object_code;
-    response[READ_OBJECT_RESP_MAX_SUBINDICES]   = obj_desc.max_subindices;
-    response[READ_OBJECT_RESP_NAME]             = obj_desc.name;
-    response[READ_OBJECT_RESP_ERROR_MESSAGE]    = error_message;
-    
-    return 0;
 }
 
-//! service callback write element
+//! svc_write_element
 /*!
- * \param request service request data
- * \parma response service response data
- * \return success
+ * \param[in]   req     Service request data.
+ * \param[out]  resp    Service response data.
  */
-int canopen_protocol::handler::service_write_element(const service_arglist_t& request, 
-        service_arglist_t& response) {
+void canopen_protocol::handler::svc_write_element(const struct svc_req_write_element& req, struct svc_resp_write_element& resp) {
     canopen_protocol::element_description_t elem_desc;            
     canopen_protocol::element_t value;
 
@@ -441,31 +367,21 @@ int canopen_protocol::handler::service_write_element(const service_arglist_t& re
     bool abort = false;
     size_t bytelen;
 
-#define WRITE_ELEMENT_REQ_INDEX     0
-#define WRITE_ELEMENT_REQ_SUB_INDEX 1
-#define WRITE_ELEMENT_REQ_VALUE     2
-    uint16_t index      = request[WRITE_ELEMENT_REQ_INDEX];
-    uint8_t sub_index   = request[WRITE_ELEMENT_REQ_SUB_INDEX];
-    string buf          = request[WRITE_ELEMENT_REQ_VALUE];
-    
-    // default response values
-    string error_message = "";
-
     try {
-        _instance->get_element_description(index, sub_index, elem_desc);
+        _instance->get_element_description(req.index, req.sub_index, elem_desc);
     } catch (std::exception& e) {
-        error_message = e.what();
-        goto func_exit;
+        resp.error_message = e.what();
+        return;
     }
     
     bytelen = (elem_desc.bit_length + 7) / 8;
     value.resize(bytelen);
     
     try {
-        pval      = eval_full(buf);
+        pval      = eval_full(req.value);
     } catch (std::exception& e) {
-        error_message = format_string("caught exception while evaluating value: %s\n", e.what());
-        goto func_exit;
+        resp.error_message = format_string("caught exception while evaluating value: %s\n", e.what());
+        return;
     }
 
     pintval   = dynamic_cast<py_int *>(pval);
@@ -597,7 +513,7 @@ int canopen_protocol::handler::service_write_element(const service_arglist_t& re
         case ECT_VISIBLE_STRING:
             abort = true;
 
-            error_message = string("not implemented data_type: ") +
+            resp.error_message = string("not implemented data_type: ") +
                         data_type_to_string(elem_desc.data_type);
             break;
         case ECT_OCTET_STRING: {
@@ -625,97 +541,47 @@ int canopen_protocol::handler::service_write_element(const service_arglist_t& re
 
     if (!abort) {
         try {
-            _instance->write_element(index, sub_index, value);
+            _instance->write_element(req.index, req.sub_index, value);
         } catch (std::exception& e) {
-            error_message = e.what();
+            resp.error_message = e.what();
         }
     } 
-
-func_exit:
-    
-    // response data
-#define WRITE_ELEMENT_RESP_ERROR_MESSAGE    0
-    response.resize(1);
-    response[WRITE_ELEMENT_RESP_ERROR_MESSAGE] = error_message;
-
-    return 0;
 }
 
-//! service callback list object dictionary
+//! svc_object_dictionary_list
 /*!
- * \param request service request data
- * \parma response service response data
- * \return success
+ * \param[in]   req     Service request data.
+ * \param[out]  resp    Service response data.
  */
-int canopen_protocol::handler::service_object_dictionary_list(
-        const service_arglist_t& request, service_arglist_t& response) {
-    object_dictionary_list_t list;
-
-    // default response values
-    std::vector<rk_type> indices_resp;
-    string error_message = "";
-
+void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_object_dictionary_list& req, struct svc_resp_object_dictionary_list& resp) {
     try {
-        _instance->get_object_dictionary_list(list);
-        indices_resp.assign(list.begin(), list.end());
+        object_dictionary_list_t tmp_list;
+        _instance->get_object_dictionary_list(tmp_list);
+        resp.indices.assign(tmp_list.begin(), tmp_list.end());
     } catch (std::exception& e) {
-        error_message = e.what();
+        resp.error_message = e.what();
     }
-
-#define OBJECT_DICTIONARY_LIST_RESP_INDICES     0
-#define OBJECT_DICTIONARY_LIST_ERROR_MESSAGE    1
-    response.resize(2);
-    response[OBJECT_DICTIONARY_LIST_RESP_INDICES]   = indices_resp;
-    response[OBJECT_DICTIONARY_LIST_ERROR_MESSAGE]  = error_message;
-
-    return 0;
 }
         
-//! service callback pop next emergency messages
+//! svc_pop_emergency_message
 /*!
- * \param request service request data
- * \parma response service response data
- * \return success
+ * \param[in]   req     Service request data.
+ * \param[out]  resp    Service response data.
  */
-int canopen_protocol::handler::service_pop_emergency_message(
-        const service_arglist_t& request, service_arglist_t& response) {
+void canopen_protocol::handler::svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp) {
     emergency_message_t msg;
     
-    // default response values
-    uint64_t timestamp_sec = 0, timestamp_nsec = 0;
-    uint16_t error_code = 0;
-    uint8_t error_register = 0;
-    std::vector<rk_type> data;
-    std::string error_message = "";
-
     try {
         _instance->pop_emergency_message(msg);
 
-        timestamp_sec = msg.ts.tv_sec;
-        timestamp_nsec = msg.ts.tv_nsec;
-        error_code = msg.error_code;
-        error_register = msg.error_register;
-        data.assign(msg.data.begin(), msg.data.end());
+        resp.timestamp_sec  = msg.ts.tv_sec;
+        resp.timestamp_nsec = msg.ts.tv_nsec;
+        resp.error_code     = msg.error_code;
+        resp.error_register = msg.error_register;
+        resp.data.assign(msg.data.begin(), msg.data.end());
     } catch (std::exception& e) {
         // no message available
-        error_message = "no emergency messages present";
+        resp.error_message = "no emergency messages present";
     }
-
-#define POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_SEC    0
-#define POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_NSEC   1
-#define POP_EMERGENCY_MESSAGE_RESP_ERROR_CODE       2
-#define POP_EMERGENCY_MESSAGE_RESP_ERROR_REGISTER   3
-#define POP_EMERGENCY_MESSAGE_RESP_DATA             4
-#define POP_EMERGENCY_MESSAGE_RESP_ERROR_MESSAGE    5
-    response.resize(6);
-    response[POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_SEC]  = timestamp_sec;
-    response[POP_EMERGENCY_MESSAGE_RESP_TIMESTAMP_NSEC] = timestamp_nsec;
-    response[POP_EMERGENCY_MESSAGE_RESP_ERROR_CODE]     = error_code;
-    response[POP_EMERGENCY_MESSAGE_RESP_ERROR_REGISTER] = error_register;
-    response[POP_EMERGENCY_MESSAGE_RESP_DATA]           = data;
-    response[POP_EMERGENCY_MESSAGE_RESP_ERROR_MESSAGE]  = error_message;
-    
-
-    return 0;
 }
 
