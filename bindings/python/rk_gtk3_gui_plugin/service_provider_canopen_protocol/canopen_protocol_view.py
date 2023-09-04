@@ -139,7 +139,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
                 self.current_device.canopen_dictionary[index].subindices[sub_index].valid = False
 
         self.treeview_dictionary.queue_draw()
-        self.treeview_dictionary.expand_all()
+        #self.treeview_dictionary.expand_all()
 
     def show(self, modname, devname):
         #if self.current_device and self.current_device.modname == modname and self.current_device.devname == devname:
