@@ -157,7 +157,37 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         self.treestore_dictionary.clear()
         self.current_device.list_dictionary()
 
-        # FIXME: Replace this with a loop
-        list(map(lambda x: self.treestore_dictionary.insert(None, -1, [x, "", self.current_device]),
-                self.current_device.canopen_dictionary))
+        d = self.current_device.canopen_dictionary
+        commun = {key: value for i, (key, value) in enumerate(d.items()) if (key >= 0x1000 and key <  0x1600) or (key >= 0x1800 and key < 0x1A00) or (key > 0x1C00 and key < 0x2000)}
+        rxpdos = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x1600 and key <  0x1800}
+        txpdos = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x1A00 and key <  0x1C00}
+        user   = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x2000 and key <  0x6000}
+        profile= {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x6000 and key <  0xA000}
+        diag   = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0xA000 and key <  0xB000}
+        device = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0xF000}
+        rest   = {key: value for i, (key, value) in enumerate(d.items()) if key <  0x1000 or (key >= 0xB000 and key < 0xF000)}
 
+        # FIXME: Replace this with a loop
+        list(map(lambda x: self.treestore_dictionary.insert(None, -1, [x, "", self.current_device]), rest))
+                #self.current_device.canopen_dictionary))
+
+        commun_it = self.treestore_dictionary.insert(None, -1, [0x1000, "Communication", "0x1000-0x1FFF"])
+        list(map(lambda x: self.treestore_dictionary.insert(commun_it, -1, [x, "", self.current_device]), commun))
+
+        rxpdos_it = self.treestore_dictionary.insert(commun_it, -1, [0x1600, "RxPDOs", "0x1600-0x17FF"])
+        list(map(lambda x: self.treestore_dictionary.insert(rxpdos_it, -1, [x, "", self.current_device]), rxpdos))
+        
+        txpdos_it = self.treestore_dictionary.insert(commun_it, -1, [0x1A00, "TxPDOs", "0x1A00-0x1BFF"])
+        list(map(lambda x: self.treestore_dictionary.insert(txpdos_it, -1, [x, "", self.current_device]), txpdos))
+
+        user_it = self.treestore_dictionary.insert(None, -1, [0x2000, "Vendor-specific", "0x2000-0x5FFF"])
+        list(map(lambda x: self.treestore_dictionary.insert(user_it, -1, [x, "", self.current_device]), user))
+        
+        profile_it = self.treestore_dictionary.insert(None, -1, [0x6000, "Profile-specific", "0x6000-0x9FFF"])
+        list(map(lambda x: self.treestore_dictionary.insert(profile_it, -1, [x, "", self.current_device]), profile))
+        
+        diag_it = self.treestore_dictionary.insert(None, -1, [0xA000, "Diagnosis", "0xA000-0xAFFF"])
+        list(map(lambda x: self.treestore_dictionary.insert(diag_it, -1, [x, "", self.current_device]), diag))
+        
+        device_it = self.treestore_dictionary.insert(None, -1, [0xF000, "Device", "0xF000-0xFFFF"])
+        list(map(lambda x: self.treestore_dictionary.insert(device_it, -1, [x, "", self.current_device]), device))

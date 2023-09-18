@@ -49,11 +49,16 @@ class canopen_treeview(object):
 
         # ------------------ index column ------------------
         def cb_idn(column, cell, store, tree_iter):
-            cell.set_property("xalign", 1.0)
-            if store.iter_parent(tree_iter):
+            parent_iter = store.iter_parent(tree_iter)
+
+            cell.set_property("xalign", 0.0)
+            if parent_iter and type(store[parent_iter][2]) != str:
                 cell.set_property('text', '%d'  % store[tree_iter][0])
             else:
-                cell.set_property('text', '0x%04X'  % store[tree_iter][0])
+                if type(store[tree_iter][2]) == str:
+                    cell.set_property('text', store[tree_iter][2])
+                else:
+                    cell.set_property('text', '0x%04X'  % store[tree_iter][0])
             return True
 
         col_cnt = view.insert_column_with_data_func(-1, "IDn" , Gtk.CellRendererText(), cb_idn)
@@ -69,13 +74,15 @@ class canopen_treeview(object):
             row = store[tree_iter]
             device = row[2]
 
-            if parent_iter:
+            if parent_iter and type(store[parent_iter][2]) != str:
                 index        = store[parent_iter][0]
                 sub_index    = row[0]
-                can_object       = device.canopen_dictionary[index]
+                can_object   = device.canopen_dictionary[index]
                 element      = can_object.subindices[sub_index]
                 element.get_data()
                 cell.set_property("text", element.name)
+            elif store[tree_iter][2] == None or type(store[tree_iter][2]) == str:
+                cell.set_property("text", store[tree_iter][1])
             else:
                 path         = store.get_path(tree_iter)
                 index        = row[0]
@@ -113,7 +120,7 @@ class canopen_treeview(object):
             row = store[tree_iter]
             device = row[2]
 
-            if parent_iter:
+            if parent_iter and type(store[parent_iter][2]) != str:
                 index        = store[parent_iter][0]
                 sub_index    = row[0]
                 can_object       = device.canopen_dictionary[index]
@@ -123,6 +130,8 @@ class canopen_treeview(object):
                     cell.set_property("text", canopen_datatypes[element.data_type])
                 else:
                     cell.set_property("text", "unknown 0x%X" % element.data_type)
+            elif type(store[tree_iter][2]) == str:
+                cell.set_property("text", "")
             else:
                 path         = store.get_path(tree_iter)
                 index        = row[0]
@@ -163,7 +172,7 @@ class canopen_treeview(object):
             row = store[tree_iter]
             device = row[2]
 
-            if parent_iter:
+            if parent_iter and type(store[parent_iter][2]) != str:
                 index        = store[parent_iter][0]
                 sub_index    = row[0]
                 can_object       = device.canopen_dictionary[index]
@@ -173,6 +182,8 @@ class canopen_treeview(object):
                     cell.set_property("text", canopen_objcodes[element.objcode])
                 else:
                     cell.set_property("text", "unknown 0x%X" % element.objcode)
+            elif type(store[tree_iter][2]) == str:
+                cell.set_property("text", "")
             else:
                 path         = store.get_path(tree_iter)
                 index        = row[0]
@@ -213,7 +224,7 @@ class canopen_treeview(object):
             row = store[tree_iter]
             device = row[2]
 
-            if parent_iter:
+            if parent_iter and type(store[parent_iter][2]) != str:
                 index        = store[parent_iter][0]
                 sub_index    = row[0]
                 can_object       = device.canopen_dictionary[index]
@@ -221,6 +232,8 @@ class canopen_treeview(object):
                 element.get_data()
                 cell.set_property("text", element.value)
                 cell.set_property("foreground", cell_colors[element.valid])
+            elif type(store[tree_iter][2]) == str:
+                cell.set_property("text", "")
             else:
                 index        = row[0]
                 can_object       = device.canopen_dictionary[index]
