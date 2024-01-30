@@ -1,6 +1,7 @@
 import os
+
 from conan import ConanFile, conan_version
-from conan.tools.files import copy, chdir
+from conan.tools.files import chdir, copy
 from conan.tools.scm import Version
 
 
@@ -39,4 +40,3 @@ class MainProject(ConanFile):
             self.env_info.LN_MESSAGE_DEFINITION_DIRS.append(msgdef_dir)
         self.runenv_info.append_path("LN_MESSAGE_DEFINITION_DIRS", msgdef_dir)
         self.buildenv_info.append_path("LN_MESSAGE_DEFINITION_DIRS", msgdef_dir)
-
