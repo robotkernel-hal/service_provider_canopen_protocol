@@ -1,7 +1,8 @@
 import os
+
 from conan import ConanFile, conan_version
-from conan.tools.scm import Version
 from conan.tools.files import copy
+from conan.tools.scm import Version
 
 
 class service_provider_canopen_protocol_rkgui(ConanFile):
@@ -9,7 +10,7 @@ class service_provider_canopen_protocol_rkgui(ConanFile):
     description = "python rkgui binding to service_provider_canopen_protocol."
     author = "Robert Burger <robert.burgert@dlr.de>"
     license = "GPLv3"
-    
+
     url = f"https://rmc-github.robotic.dlr.de/robotkernel/service_provider_canopen_protocol"
     settings = "os"
     pure_python_folder = os.path.join("bindings", "python")

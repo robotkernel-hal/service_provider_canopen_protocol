@@ -1,5 +1,6 @@
-from conan import ConanFile
 import os
+
+from conan import ConanFile
 
 
 class MainProject(ConanFile):
