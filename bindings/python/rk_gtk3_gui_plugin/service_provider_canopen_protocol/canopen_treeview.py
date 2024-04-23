@@ -39,7 +39,7 @@ class canopen_treeview(object):
         pass
 
     def create_treeview(self, view):
-        self.treestore_dictionary = store = Gtk.TreeStore(int, str, GObject.TYPE_PYOBJECT) # soem id type
+        self.treestore_dictionary = store = Gtk.TreeStore(int, str, GObject.TYPE_PYOBJECT, bool) # soem id type
         view = self.treeview_dictionary = view
         view.set_model(store)
         view.set_border_width(4)
@@ -92,7 +92,7 @@ class canopen_treeview(object):
                 if can_object.objcode == 8 or can_object.objcode == 9:
                     sub_iter = search([row, ], match_func, ([0, 0], ))
                     if sub_iter is None:
-                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device])
+                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device, True])
 
                     if self.treeview_dictionary.row_expanded(path):
                         for sub in range(1, can_object.max_subindices + 1):
@@ -101,7 +101,7 @@ class canopen_treeview(object):
                             if element.data_type != 0:
                                 sub_iter = search([row, ], match_func, ([0, sub], ))
                                 if sub_iter is None:
-                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device])
+                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device, False])
 
                 cell.set_property("text", can_object.name)
             return True
@@ -141,7 +141,7 @@ class canopen_treeview(object):
                 if can_object.objcode == 8 or can_object.objcode == 9:
                     sub_iter = search([row, ], match_func, ([0, 0], ))
                     if sub_iter is None:
-                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device])
+                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device, True])
 
                     if self.treeview_dictionary.row_expanded(path):
                         for sub in range(1, can_object.max_subindices + 1):
@@ -150,7 +150,7 @@ class canopen_treeview(object):
                             if element.data_type != 0:
                                 sub_iter = search([row, ], match_func, ([0, sub], ))
                                 if sub_iter is None:
-                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device])
+                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device, False])
 
                 if can_object.data_type in canopen_datatypes:
                     cell.set_property("text", canopen_datatypes[can_object.data_type])
@@ -193,7 +193,7 @@ class canopen_treeview(object):
                 if can_object.objcode == 8 or can_object.objcode == 9:
                     sub_iter = search([row, ], match_func, ([0, 0], ))
                     if sub_iter is None:
-                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device])
+                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device, True])
 
                     if self.treeview_dictionary.row_expanded(path):
                         for sub in range(1, can_object.max_subindices + 1):
@@ -202,7 +202,7 @@ class canopen_treeview(object):
                             if element.data_type != 0:
                                 sub_iter = search([row, ], match_func, ([0, sub], ))
                                 if sub_iter is None:
-                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device])
+                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device, False])
 
                 if can_object.objcode in canopen_objcodes:
                     cell.set_property("text", canopen_objcodes[can_object.objcode])
@@ -244,7 +244,7 @@ class canopen_treeview(object):
                     except KeyError:
                         logger.warning("treeview.cb_data(): key 0 not found")
                         return False
-                    
+
                     element.get_data()
                     cell.set_property("text", element.value)
                 else:
@@ -271,10 +271,16 @@ class canopen_treeview(object):
         parent_iter = store.iter_parent(tree_iter)
 
         if parent_iter:
-            idx = store[parent_iter][0]
-            device = store[parent_iter][2]
-            sub_idx = store[tree_iter][0]
-            device.write_element(idx, sub_idx, newvalue)
+            is_variable = store[tree_iter][3]
+            if is_variable:
+                idx = store[tree_iter][0]
+                device = store[tree_iter][2]
+                device.write_element(idx, 0, newvalue)
+            else:
+                idx = store[parent_iter][0]
+                device = store[parent_iter][2]
+                sub_idx = store[tree_iter][0]
+                device.write_element(idx, sub_idx, newvalue)
         else:
             idx = store[tree_iter][0]
             device = store[tree_iter][2]
