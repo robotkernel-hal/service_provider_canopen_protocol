@@ -40,40 +40,6 @@ using namespace robotkernel;
 using namespace service_provider;
 using namespace string_util;
 
-/** Ethercat data types */
-typedef enum {
-   ECT_BOOLEAN         = 0x0001,
-   ECT_INTEGER8        = 0x0002,
-   ECT_INTEGER16       = 0x0003,
-   ECT_INTEGER32       = 0x0004,
-   ECT_UNSIGNED8       = 0x0005,
-   ECT_UNSIGNED16      = 0x0006,
-   ECT_UNSIGNED32      = 0x0007,
-   ECT_REAL32          = 0x0008,
-   ECT_VISIBLE_STRING  = 0x0009,
-   ECT_OCTET_STRING    = 0x000A,
-   ECT_UNICODE_STRING  = 0x000B,
-   ECT_TIME_OF_DAY     = 0x000C,
-   ECT_TIME_DIFFERENCE = 0x000D,
-   ECT_DOMAIN          = 0x000F,
-   ECT_INTEGER24       = 0x0010,
-   ECT_REAL64          = 0x0011,
-   ECT_INTEGER64       = 0x0015,
-   ECT_UNSIGNED24      = 0x0016,
-   ECT_UNSIGNED64      = 0x001B,
-   ECT_BYTE            = 0x001E, 
-   ECT_WORD            = 0x001F, 
-   ECT_DWORD           = 0x0020,
-   ECT_BIT1            = 0x0030,
-   ECT_BIT2            = 0x0031,
-   ECT_BIT3            = 0x0032,
-   ECT_BIT4            = 0x0033,
-   ECT_BIT5            = 0x0034,
-   ECT_BIT6            = 0x0035,
-   ECT_BIT7            = 0x0036,
-   ECT_BIT8            = 0x0037
-} ec_data_type;
-
 string data_type_to_string(uint16_t dtype) {
     switch(dtype) {
         case ECT_BOOLEAN:
@@ -359,193 +325,18 @@ void canopen_protocol::handler::svc_write_element(const struct svc_req_write_ele
     canopen_protocol::element_description_t elem_desc;            
     canopen_protocol::element_t value;
 
-    py_value *pval;
-    py_int *pintval;
-    py_long *plongval;
-    py_float *pfloatval;
-    py_special *pspval;
-    bool abort = false;
-    size_t bytelen;
-
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
     } catch (std::exception& e) {
         resp.error_message = e.what();
         return;
     }
-    
-    bytelen = (elem_desc.bit_length + 7) / 8;
-    value.resize(bytelen);
-    
-    try {
-        pval      = eval_full(req.value);
-    } catch (std::exception& e) {
-        resp.error_message = format_string("caught exception while evaluating value: %s\n", e.what());
-        return;
-    }
-
-    pintval   = dynamic_cast<py_int *>(pval);
-    plongval  = dynamic_cast<py_long *>(pval);
-    pfloatval = dynamic_cast<py_float *>(pval);
-    pspval    = dynamic_cast<py_special *>(pval);
-
-    abort = false;
-
-    switch (elem_desc.data_type) {
-        case ECT_BOOLEAN:
-            if (!pspval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint8_t *)&value[0]) = (bool)*pspval;
-            break;
-        case ECT_INTEGER8:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(int8_t *)&value[0]) = (int)*pintval;
-            break;
-        case ECT_INTEGER16:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(int16_t *)&value[0]) = (int)*pintval;
-            break;
-        case ECT_INTEGER32:
-        case ECT_INTEGER24:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(int32_t *)&value[0]) = (int)*pintval;
-            break;
-        case ECT_INTEGER64: {
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            if (plongval) 
-                (*(int64_t *)&value[0]) = (int64_t)*plongval;
-            else
-                (*(int64_t *)&value[0]) = (int)*pintval;
-            break;
-        }
-        case ECT_UNSIGNED8:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint8_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED16:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint16_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED32:
-        case ECT_UNSIGNED24:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint32_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED64: {
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            if (plongval) 
-                (*(uint64_t *)&value[0]) = (int64_t)*plongval;
-            else
-                (*(uint64_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        }
-        case ECT_REAL32:
-            if (pfloatval) {
-                (*(float *)&value[0]) = (float)*pfloatval;
-                break;
-            } else if (pintval) {
-                (*(float *)&value[0]) = (float)*pintval;
-                break;
-            } else if (plongval) {
-                (*(float *)&value[0]) = (float)*plongval;
-                break;
-            }
-
-            abort = true;
-            break;
-        case ECT_REAL64:
-            if (pfloatval) {
-                (*(float *)&value[0]) = (float)*pfloatval;
-                break;
-            } else if (pintval) {
-                (*(float *)&value[0]) = (float)*pintval;
-                break;
-            } else if (plongval) {
-                (*(float *)&value[0]) = (float)*plongval;
-                break;
-            }
-
-            abort = true;
-            break;
-        case ECT_BIT1:
-        case ECT_BIT2:
-        case ECT_BIT3:
-        case ECT_BIT4:
-        case ECT_BIT5:
-        case ECT_BIT6:
-        case ECT_BIT7:
-        case ECT_BIT8:
-        case ECT_VISIBLE_STRING:
-            abort = true;
-
-            resp.error_message = string("not implemented data_type: ") +
-                        data_type_to_string(elem_desc.data_type);
-            break;
-        case ECT_OCTET_STRING: {
-            py_list *plist  = dynamic_cast<py_list *>(pval);
-            if (!plist) {
-                log(warning, "pylist is null on OCTET_STRING\n");
-                break;
-            }
-            int num = 0;
-            uint8_t *tmp = &value[0];
-            for (py_list_value_t::iterator it = plist->value.begin();
-                    it != plist->value.end(); ++it) {
-                //py_long *plongval2     = dynamic_cast<py_long *>(*it);
-                py_int *pintval2     = dynamic_cast<py_int *>(*it);
-                tmp[num++] = (int)*pintval2;
-            }
-            break;
-        }
-        default:
-            break;
-    }
-    
-    if (pval)
-        delete pval;
-
-    if (!abort) {
+    value = String2Value(req.value,elem_desc.data_type,elem_desc.bit_length) ;
         try {
             _instance->write_element(req.index, req.sub_index, value);
         } catch (std::exception& e) {
             resp.error_message = e.what();
         }
-    } 
 }
 
 //! svc_object_dictionary_list

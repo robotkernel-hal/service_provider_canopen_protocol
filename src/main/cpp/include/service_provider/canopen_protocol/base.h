@@ -157,6 +157,198 @@ namespace service_provider {
     }; // namespace canopen_protocol
 
 }; // namespace service_provider
+/** Ethercat data types */
+typedef enum {
+    ECT_BOOLEAN         = 0x0001,
+    ECT_INTEGER8        = 0x0002,
+    ECT_INTEGER16       = 0x0003,
+    ECT_INTEGER32       = 0x0004,
+    ECT_UNSIGNED8       = 0x0005,
+    ECT_UNSIGNED16      = 0x0006,
+    ECT_UNSIGNED32      = 0x0007,
+    ECT_REAL32          = 0x0008,
+    ECT_VISIBLE_STRING  = 0x0009,
+    ECT_OCTET_STRING    = 0x000A,
+    ECT_UNICODE_STRING  = 0x000B,
+    ECT_TIME_OF_DAY     = 0x000C,
+    ECT_TIME_DIFFERENCE = 0x000D,
+    ECT_DOMAIN          = 0x000F,
+    ECT_INTEGER24       = 0x0010,
+    ECT_REAL64          = 0x0011,
+    ECT_INTEGER64       = 0x0015,
+    ECT_UNSIGNED24      = 0x0016,
+    ECT_UNSIGNED64      = 0x001B,
+    ECT_BYTE            = 0x001E,
+    ECT_WORD            = 0x001F,
+    ECT_DWORD           = 0x0020,
+    ECT_BIT1            = 0x0030,
+    ECT_BIT2            = 0x0031,
+    ECT_BIT3            = 0x0032,
+    ECT_BIT4            = 0x0033,
+    ECT_BIT5            = 0x0034,
+    ECT_BIT6            = 0x0035,
+    ECT_BIT7            = 0x0036,
+    ECT_BIT8            = 0x0037
+} ec_data_type;
+
+static service_provider::canopen_protocol::element_t String2Value(std::string string_val,uint16_t data_type,size_t bit_length) {
+    service_provider::canopen_protocol::element_t value;
+
+    string_util::py_value *pval;
+    string_util::py_int *pintval;
+    string_util::py_long *plongval;
+    string_util::py_float *pfloatval;
+    string_util::py_special *pspval;
+    bool abort;
+    size_t bytelen;
+    bytelen = (bit_length + 7) / 8;
+    value.resize(bytelen);
+    pval = string_util::eval_full(string_val);
+
+    pintval = dynamic_cast<string_util::py_int *>(pval);
+    plongval = dynamic_cast<string_util::py_long *>(pval);
+    pfloatval = dynamic_cast<string_util::py_float *>(pval);
+    pspval = dynamic_cast<string_util::py_special *>(pval);
+    abort = false;
+
+    switch(data_type) {
+        case ECT_BOOLEAN :
+            if(!pspval) {
+                abort = true;
+                break;
+            }
+            (*(uint8_t *)&value[0]) = (bool)*pspval;
+            break;
+        case ECT_INTEGER8:
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            (*(int8_t *)&value[0]) = (int)*pintval;
+            break;
+        case ECT_INTEGER16:
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            (*(int16_t *)&value[0]) = (int)*pintval;
+            break;
+        case ECT_INTEGER32:
+        case ECT_INTEGER24:
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            (*(int32_t *)&value[0]) = (int)*pintval;
+            break;
+        case ECT_INTEGER64: {
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            if(plongval)
+                (*(int64_t *)&value[0]) = (int64_t)*plongval;
+            else
+                (*(int64_t *)&value[0]) = (int)*pintval;
+            break;
+        }
+        case ECT_UNSIGNED8:
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            (*(uint8_t *)&value[0]) = (unsigned int)*pintval;
+            break;
+        case ECT_UNSIGNED16:
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            (*(uint16_t *)&value[0]) = (unsigned int)*pintval;
+            break;
+        case ECT_UNSIGNED32:
+        case ECT_UNSIGNED24:
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            (*(uint32_t *)&value[0]) = (unsigned int)*pintval;
+            break;
+        case ECT_UNSIGNED64: {
+            if(!pintval) {
+                abort = true;
+                break;
+            }
+            if(plongval)
+                (*(uint64_t *)&value[0]) = (int64_t)*plongval;
+            else
+                (*(uint64_t *)&value[0]) = (unsigned int)*pintval;
+            break;
+        }
+        case ECT_REAL32:
+            if(pfloatval) {
+                (*(float *)&value[0]) = (float)*pfloatval;
+                break;
+            } else if(pintval) {
+                (*(float *)&value[0]) = (float)*pintval;
+                break;
+            } else if(plongval) {
+                (*(float *)&value[0]) = (float)*plongval;
+                break;
+            }
+            abort = true;
+            break;
+        case ECT_REAL64:
+            if(pfloatval) {
+                (*(float *)&value[0]) = (float)*pfloatval;
+                break;
+            } else if(pintval) {
+                (*(float *)&value[0]) = (float)*pintval;
+                break;
+            } else if(plongval) {
+                (*(float *)&value[0]) = (float)*plongval;
+                break;
+            }
+            abort = true;
+            break;
+        case ECT_BIT1:
+        case ECT_BIT2:
+        case ECT_BIT3:
+        case ECT_BIT4:
+        case ECT_BIT5:
+        case ECT_BIT6:
+        case ECT_BIT7:
+        case ECT_BIT8:
+            abort = true;
+            break;
+        case ECT_VISIBLE_STRING: {
+            value.insert(value.end(), string_val.begin(), string_val.end());
+        } break;
+        case ECT_OCTET_STRING: {
+            string_util::py_list *plist = dynamic_cast<string_util::py_list *>(pval);
+            if(!plist) {
+                break;
+            }
+            int num = 0;
+            uint8_t *tmp = &value[0];
+            for(string_util::py_list_value_t::iterator it = plist->value.begin();
+                it != plist->value.end();
+                ++it) {
+                string_util::py_int *pintval2 = dynamic_cast<string_util::py_int *>(*it);
+                tmp[num++] = (int)*pintval2;
+            }
+            break;
+        }
+        default:
+            throw std::runtime_error("UNKNOWN DATA TYPE ");
+    }
+    delete pval;
+    if(abort) {
+        throw std::runtime_error("ABORT");
+    }
+    return value;
+}
+
 
 #endif // __SERVICE_PROVIDER__CANOPEN_PROTOCOL__BASE__H__
 
