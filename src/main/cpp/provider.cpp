@@ -38,6 +38,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace robotkernel;
 using namespace service_provider;
+using namespace canopen_protocol ;
 using namespace string_util;
 
 string data_type_to_string(uint16_t dtype) {
@@ -331,7 +332,7 @@ void canopen_protocol::handler::svc_write_element(const struct svc_req_write_ele
         resp.error_message = e.what();
         return;
     }
-    value = String2Value(req.value,elem_desc.data_type,elem_desc.bit_length) ;
+    value = string_to_value(req.value,elem_desc.data_type,elem_desc.bit_length) ;
         try {
             _instance->write_element(req.index, req.sub_index, value);
         } catch (std::exception& e) {
