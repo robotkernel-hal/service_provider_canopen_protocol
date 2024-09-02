@@ -328,11 +328,11 @@ void canopen_protocol::handler::svc_write_element(const struct svc_req_write_ele
 
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
+        value = string_to_value(req.value,elem_desc.data_type,elem_desc.bit_length) ;
     } catch (std::exception& e) {
         resp.error_message = e.what();
         return;
     }
-    value = string_to_value(req.value,elem_desc.data_type,elem_desc.bit_length) ;
         try {
             _instance->write_element(req.index, req.sub_index, value);
         } catch (std::exception& e) {
