@@ -278,6 +278,7 @@ namespace service_provider {
                 }
                 default:
                     throw std::runtime_error("UNKNOWN DATA TYPE ");
+                    delete pval;
             }
             delete pval;
             if(abort) {
