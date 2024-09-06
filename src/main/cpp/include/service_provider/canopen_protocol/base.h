@@ -131,7 +131,7 @@ namespace service_provider {
         static element_t string_to_value(std::string string_val,uint16_t data_type,size_t bit_length) {
             element_t value;
 
-            string_util::py_value *pval;
+            std::unique_ptr<string_util::py_value> pval(string_util::eval_full(string_val));
             string_util::py_int *pintval;
             string_util::py_long *plongval;
             string_util::py_float *pfloatval;
@@ -140,12 +140,11 @@ namespace service_provider {
             size_t bytelen;
             bytelen = (bit_length + 7) / 8;
             value.resize(bytelen);
-            pval = string_util::eval_full(string_val);
 
-            pintval = dynamic_cast<string_util::py_int *>(pval);
-            plongval = dynamic_cast<string_util::py_long *>(pval);
-            pfloatval = dynamic_cast<string_util::py_float *>(pval);
-            pspval = dynamic_cast<string_util::py_special *>(pval);
+            pintval = dynamic_cast<string_util::py_int *>(pval.get());
+            plongval = dynamic_cast<string_util::py_long *>(pval.get());
+            pfloatval = dynamic_cast<string_util::py_float *>(pval.get());
+            pspval = dynamic_cast<string_util::py_special *>(pval.get());
             abort = false;
 
             switch(data_type) {
@@ -262,7 +261,7 @@ namespace service_provider {
                     value.insert(value.end(), string_val.begin(), string_val.end());
                 } break;
                 case ECT_OCTET_STRING: {
-                    string_util::py_list *plist = dynamic_cast<string_util::py_list *>(pval);
+                    string_util::py_list* plist = dynamic_cast<string_util::py_list*>(pval.get());
                     if(!plist) {
                         break;
                     }
@@ -278,9 +277,7 @@ namespace service_provider {
                 }
                 default:
                     throw std::runtime_error("UNKNOWN DATA TYPE ");
-                    delete pval;
             }
-            delete pval;
             if(abort) {
                 throw std::runtime_error("ABORT");
             }
