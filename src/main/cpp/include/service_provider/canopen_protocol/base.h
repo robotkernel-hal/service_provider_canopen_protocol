@@ -94,7 +94,7 @@ namespace service_provider {
         //! read or write canopen element values
         typedef std::vector<uint8_t> element_t;
 
-/** Ethercat data types */
+        /** Ethercat data types */
         typedef enum {
             ECT_BOOLEAN         = 0x0001,
             ECT_INTEGER8        = 0x0002,
@@ -128,7 +128,7 @@ namespace service_provider {
             ECT_BIT8            = 0x0037
         } ec_data_type;
 
-        static element_t string_to_value(std::string string_val,uint16_t data_type,size_t bit_length) {
+        static element_t string_to_value(std::string string_val, uint16_t data_type, size_t bit_length) {
             element_t value;
 
             std::unique_ptr<string_util::py_value> pval(string_util::eval_full(string_val));
@@ -148,7 +148,7 @@ namespace service_provider {
             abort = false;
 
             switch(data_type) {
-                case ECT_BOOLEAN :
+                case ECT_BOOLEAN:
                     if(!pspval) {
                         abort = true;
                         break;
