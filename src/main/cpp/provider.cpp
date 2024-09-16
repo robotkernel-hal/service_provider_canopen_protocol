@@ -38,7 +38,7 @@ using namespace std;
 using namespace std::placeholders;
 using namespace robotkernel;
 using namespace service_provider;
-using namespace canopen_protocol ;
+using namespace canopen_protocol;
 using namespace string_util;
 
 string data_type_to_string(uint16_t dtype) {
@@ -254,8 +254,8 @@ canopen_protocol::handler::~handler() {}
  * \param[out]  resp    Service response data.
  */
 void canopen_protocol::handler::svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp) {
-    canopen_protocol::element_description_t elem_desc;            
-    canopen_protocol::element_t value;
+    element_description_t elem_desc;
+    element_t value;
     
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
@@ -304,7 +304,7 @@ void canopen_protocol::handler::svc_read_element(const struct svc_req_read_eleme
  * \param[out]  resp    Service response data.
  */
 void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object& req, struct svc_resp_read_object& resp) {
-    canopen_protocol::object_description_t obj_desc;
+    object_description_t obj_desc;
 
     try {
         _instance->get_object_description(req.index, obj_desc);
@@ -323,8 +323,8 @@ void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object
  * \param[out]  resp    Service response data.
  */
 void canopen_protocol::handler::svc_write_element(const struct svc_req_write_element& req, struct svc_resp_write_element& resp) {
-    canopen_protocol::element_description_t elem_desc;            
-    canopen_protocol::element_t value;
+    element_description_t elem_desc;
+    element_t value;
 
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
