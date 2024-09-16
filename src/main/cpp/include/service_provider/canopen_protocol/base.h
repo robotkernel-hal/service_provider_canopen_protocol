@@ -258,7 +258,7 @@ namespace service_provider {
                     abort = true;
                     break;
                 case ECT_VISIBLE_STRING: {
-                    value.insert(value.end(), string_val.begin(), string_val.end());
+                    std::copy(string_val.begin(), string_val.end(), value.begin());
                 } break;
                 case ECT_OCTET_STRING: {
                     string_util::py_list* plist = dynamic_cast<string_util::py_list*>(pval.get());
