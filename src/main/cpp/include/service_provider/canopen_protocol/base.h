@@ -276,10 +276,10 @@ namespace service_provider {
                     break;
                 }
                 default:
-                    throw std::runtime_error("UNKNOWN DATA TYPE ");
+                    throw std::runtime_error("unknown data type: " + std::to_string(data_type));
             }
             if(abort) {
-                throw std::runtime_error("ABORT");
+                throw std::runtime_error("Conversion failed for data type: " + std::to_string(data_type));
             }
             return value;
         }
