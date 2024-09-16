@@ -100,7 +100,7 @@ string data_type_to_string(uint16_t dtype) {
     }
 
     return format_string("Type 0x%4.4X", dtype);
-}            
+}
 
 typedef const std::map<uint32_t, std::string> abort_code_map_t;
 abort_code_map_t abort_code_map = {
@@ -155,7 +155,7 @@ string to_unicode(const char* input, int input_len) {
         else if(*cp == '|') ss << "|";
         else if(*cp == '%') ss << "%";
         else { }
-    }	
+    }
     return ss.str();
 }
 
@@ -177,23 +177,23 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             else
                 return string("False");
         case ECT_INTEGER8:
-            return format_string("%d", *(int8_t *)usdo); 
+            return format_string("%d", *(int8_t *)usdo);
         case ECT_INTEGER16:
-            return format_string("%d", *(int16_t *)usdo); 
+            return format_string("%d", *(int16_t *)usdo);
         case ECT_INTEGER32:
         case ECT_INTEGER24:
-            return format_string("%d", *(int32_t *)usdo); 
+            return format_string("%d", *(int32_t *)usdo);
         case ECT_INTEGER64:
-            return format_string("%lld", *(int64_t *)usdo); 
+            return format_string("%lld", *(int64_t *)usdo);
         case ECT_UNSIGNED8:
-            return format_string("%u", *(uint8_t *)usdo); 
+            return format_string("%u", *(uint8_t *)usdo);
         case ECT_UNSIGNED16:
-            return format_string("%u", *(uint16_t *)usdo); 
+            return format_string("%u", *(uint16_t *)usdo);
         case ECT_UNSIGNED32:
         case ECT_UNSIGNED24:
-            return format_string("%u", *(uint32_t *)usdo); 
+            return format_string("%u", *(uint32_t *)usdo);
         case ECT_UNSIGNED64:
-            return format_string("%llu", *(uint64_t *)usdo); 
+            return format_string("%llu", *(uint64_t *)usdo);
         case ECT_REAL32:
             return format_string("%f", *(float *)usdo);
         case ECT_REAL64:
@@ -230,10 +230,10 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             return ans;
         }
     }
-} 
-    
-canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
-    : log_base(req->owner, "canopen_protocol", req->device_name) 
+}
+
+canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req)
+    : log_base(req->owner, "canopen_protocol", req->device_name)
 {
     _instance = std::dynamic_pointer_cast<service_provider::canopen_protocol::base>(req);
     if (!_instance)
@@ -256,7 +256,7 @@ canopen_protocol::handler::~handler() {}
 void canopen_protocol::handler::svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp) {
     element_description_t elem_desc;
     element_t value;
-    
+
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
 
@@ -269,17 +269,17 @@ void canopen_protocol::handler::svc_read_element(const struct svc_req_read_eleme
 
         // decode data
         if (elem_desc.default_value.size() > 0) {
-            resp.default_value = value_2_string(&elem_desc.default_value[0], 
+            resp.default_value = value_2_string(&elem_desc.default_value[0],
                     elem_desc.default_value.size(), elem_desc.data_type, req.index);
         }
 
         if (elem_desc.min_value.size() > 0) {
-            resp.min_value = value_2_string(&elem_desc.min_value[0], 
+            resp.min_value = value_2_string(&elem_desc.min_value[0],
                     elem_desc.min_value.size(), elem_desc.data_type, req.index);
         }
 
         if (elem_desc.max_value.size() > 0) {
-            resp.max_value = value_2_string(&elem_desc.max_value[0], 
+            resp.max_value = value_2_string(&elem_desc.max_value[0],
                     elem_desc.max_value.size(), elem_desc.data_type, req.index);
         }
     } catch (std::exception& e) {
@@ -333,11 +333,11 @@ void canopen_protocol::handler::svc_write_element(const struct svc_req_write_ele
         resp.error_message = e.what();
         return;
     }
-        try {
-            _instance->write_element(req.index, req.sub_index, value);
-        } catch (std::exception& e) {
-            resp.error_message = e.what();
-        }
+    try {
+        _instance->write_element(req.index, req.sub_index, value);
+    } catch (std::exception& e) {
+        resp.error_message = e.what();
+    }
 }
 
 //! svc_object_dictionary_list
@@ -354,7 +354,7 @@ void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_
         resp.error_message = e.what();
     }
 }
-        
+
 //! svc_pop_emergency_message
 /*!
  * \param[in]   req     Service request data.
@@ -362,7 +362,7 @@ void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_
  */
 void canopen_protocol::handler::svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp) {
     emergency_message_t msg;
-    
+
     try {
         _instance->pop_emergency_message(msg);
 
