@@ -38,41 +38,8 @@ using namespace std;
 using namespace std::placeholders;
 using namespace robotkernel;
 using namespace service_provider;
+using namespace canopen_protocol;
 using namespace string_util;
-
-/** Ethercat data types */
-typedef enum {
-   ECT_BOOLEAN         = 0x0001,
-   ECT_INTEGER8        = 0x0002,
-   ECT_INTEGER16       = 0x0003,
-   ECT_INTEGER32       = 0x0004,
-   ECT_UNSIGNED8       = 0x0005,
-   ECT_UNSIGNED16      = 0x0006,
-   ECT_UNSIGNED32      = 0x0007,
-   ECT_REAL32          = 0x0008,
-   ECT_VISIBLE_STRING  = 0x0009,
-   ECT_OCTET_STRING    = 0x000A,
-   ECT_UNICODE_STRING  = 0x000B,
-   ECT_TIME_OF_DAY     = 0x000C,
-   ECT_TIME_DIFFERENCE = 0x000D,
-   ECT_DOMAIN          = 0x000F,
-   ECT_INTEGER24       = 0x0010,
-   ECT_REAL64          = 0x0011,
-   ECT_INTEGER64       = 0x0015,
-   ECT_UNSIGNED24      = 0x0016,
-   ECT_UNSIGNED64      = 0x001B,
-   ECT_BYTE            = 0x001E, 
-   ECT_WORD            = 0x001F, 
-   ECT_DWORD           = 0x0020,
-   ECT_BIT1            = 0x0030,
-   ECT_BIT2            = 0x0031,
-   ECT_BIT3            = 0x0032,
-   ECT_BIT4            = 0x0033,
-   ECT_BIT5            = 0x0034,
-   ECT_BIT6            = 0x0035,
-   ECT_BIT7            = 0x0036,
-   ECT_BIT8            = 0x0037
-} ec_data_type;
 
 string data_type_to_string(uint16_t dtype) {
     switch(dtype) {
@@ -133,7 +100,7 @@ string data_type_to_string(uint16_t dtype) {
     }
 
     return format_string("Type 0x%4.4X", dtype);
-}            
+}
 
 typedef const std::map<uint32_t, std::string> abort_code_map_t;
 abort_code_map_t abort_code_map = {
@@ -188,7 +155,7 @@ string to_unicode(const char* input, int input_len) {
         else if(*cp == '|') ss << "|";
         else if(*cp == '%') ss << "%";
         else { }
-    }	
+    }
     return ss.str();
 }
 
@@ -210,23 +177,23 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             else
                 return string("False");
         case ECT_INTEGER8:
-            return format_string("%d", *(int8_t *)usdo); 
+            return format_string("%d", *(int8_t *)usdo);
         case ECT_INTEGER16:
-            return format_string("%d", *(int16_t *)usdo); 
+            return format_string("%d", *(int16_t *)usdo);
         case ECT_INTEGER32:
         case ECT_INTEGER24:
-            return format_string("%d", *(int32_t *)usdo); 
+            return format_string("%d", *(int32_t *)usdo);
         case ECT_INTEGER64:
-            return format_string("%lld", *(int64_t *)usdo); 
+            return format_string("%lld", *(int64_t *)usdo);
         case ECT_UNSIGNED8:
-            return format_string("%u", *(uint8_t *)usdo); 
+            return format_string("%u", *(uint8_t *)usdo);
         case ECT_UNSIGNED16:
-            return format_string("%u", *(uint16_t *)usdo); 
+            return format_string("%u", *(uint16_t *)usdo);
         case ECT_UNSIGNED32:
         case ECT_UNSIGNED24:
-            return format_string("%u", *(uint32_t *)usdo); 
+            return format_string("%u", *(uint32_t *)usdo);
         case ECT_UNSIGNED64:
-            return format_string("%llu", *(uint64_t *)usdo); 
+            return format_string("%llu", *(uint64_t *)usdo);
         case ECT_REAL32:
             return format_string("%f", *(float *)usdo);
         case ECT_REAL64:
@@ -263,10 +230,10 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             return ans;
         }
     }
-} 
-    
-canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req) 
-    : log_base(req->owner, "canopen_protocol", req->device_name) 
+}
+
+canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req)
+    : log_base(req->owner, "canopen_protocol", req->device_name)
 {
     _instance = std::dynamic_pointer_cast<service_provider::canopen_protocol::base>(req);
     if (!_instance)
@@ -287,9 +254,9 @@ canopen_protocol::handler::~handler() {}
  * \param[out]  resp    Service response data.
  */
 void canopen_protocol::handler::svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp) {
-    canopen_protocol::element_description_t elem_desc;            
-    canopen_protocol::element_t value;
-    
+    element_description_t elem_desc;
+    element_t value;
+
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
 
@@ -302,17 +269,17 @@ void canopen_protocol::handler::svc_read_element(const struct svc_req_read_eleme
 
         // decode data
         if (elem_desc.default_value.size() > 0) {
-            resp.default_value = value_2_string(&elem_desc.default_value[0], 
+            resp.default_value = value_2_string(&elem_desc.default_value[0],
                     elem_desc.default_value.size(), elem_desc.data_type, req.index);
         }
 
         if (elem_desc.min_value.size() > 0) {
-            resp.min_value = value_2_string(&elem_desc.min_value[0], 
+            resp.min_value = value_2_string(&elem_desc.min_value[0],
                     elem_desc.min_value.size(), elem_desc.data_type, req.index);
         }
 
         if (elem_desc.max_value.size() > 0) {
-            resp.max_value = value_2_string(&elem_desc.max_value[0], 
+            resp.max_value = value_2_string(&elem_desc.max_value[0],
                     elem_desc.max_value.size(), elem_desc.data_type, req.index);
         }
     } catch (std::exception& e) {
@@ -337,7 +304,7 @@ void canopen_protocol::handler::svc_read_element(const struct svc_req_read_eleme
  * \param[out]  resp    Service response data.
  */
 void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object& req, struct svc_resp_read_object& resp) {
-    canopen_protocol::object_description_t obj_desc;
+    object_description_t obj_desc;
 
     try {
         _instance->get_object_description(req.index, obj_desc);
@@ -356,196 +323,21 @@ void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object
  * \param[out]  resp    Service response data.
  */
 void canopen_protocol::handler::svc_write_element(const struct svc_req_write_element& req, struct svc_resp_write_element& resp) {
-    canopen_protocol::element_description_t elem_desc;            
-    canopen_protocol::element_t value;
-
-    py_value *pval;
-    py_int *pintval;
-    py_long *plongval;
-    py_float *pfloatval;
-    py_special *pspval;
-    bool abort = false;
-    size_t bytelen;
+    element_description_t elem_desc;
+    element_t value;
 
     try {
         _instance->get_element_description(req.index, req.sub_index, elem_desc);
+        value = string_to_value(req.value, elem_desc.data_type, elem_desc.bit_length) ;
     } catch (std::exception& e) {
         resp.error_message = e.what();
         return;
     }
-    
-    bytelen = (elem_desc.bit_length + 7) / 8;
-    value.resize(bytelen);
-    
     try {
-        pval      = eval_full(req.value);
+        _instance->write_element(req.index, req.sub_index, value);
     } catch (std::exception& e) {
-        resp.error_message = format_string("caught exception while evaluating value: %s\n", e.what());
-        return;
+        resp.error_message = e.what();
     }
-
-    pintval   = dynamic_cast<py_int *>(pval);
-    plongval  = dynamic_cast<py_long *>(pval);
-    pfloatval = dynamic_cast<py_float *>(pval);
-    pspval    = dynamic_cast<py_special *>(pval);
-
-    abort = false;
-
-    switch (elem_desc.data_type) {
-        case ECT_BOOLEAN:
-            if (!pspval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint8_t *)&value[0]) = (bool)*pspval;
-            break;
-        case ECT_INTEGER8:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(int8_t *)&value[0]) = (int)*pintval;
-            break;
-        case ECT_INTEGER16:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(int16_t *)&value[0]) = (int)*pintval;
-            break;
-        case ECT_INTEGER32:
-        case ECT_INTEGER24:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(int32_t *)&value[0]) = (int)*pintval;
-            break;
-        case ECT_INTEGER64: {
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            if (plongval) 
-                (*(int64_t *)&value[0]) = (int64_t)*plongval;
-            else
-                (*(int64_t *)&value[0]) = (int)*pintval;
-            break;
-        }
-        case ECT_UNSIGNED8:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint8_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED16:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint16_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED32:
-        case ECT_UNSIGNED24:
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            (*(uint32_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED64: {
-            if (!pintval) {
-                abort = true;
-                break;
-            }
-
-            if (plongval) 
-                (*(uint64_t *)&value[0]) = (int64_t)*plongval;
-            else
-                (*(uint64_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        }
-        case ECT_REAL32:
-            if (pfloatval) {
-                (*(float *)&value[0]) = (float)*pfloatval;
-                break;
-            } else if (pintval) {
-                (*(float *)&value[0]) = (float)*pintval;
-                break;
-            } else if (plongval) {
-                (*(float *)&value[0]) = (float)*plongval;
-                break;
-            }
-
-            abort = true;
-            break;
-        case ECT_REAL64:
-            if (pfloatval) {
-                (*(float *)&value[0]) = (float)*pfloatval;
-                break;
-            } else if (pintval) {
-                (*(float *)&value[0]) = (float)*pintval;
-                break;
-            } else if (plongval) {
-                (*(float *)&value[0]) = (float)*plongval;
-                break;
-            }
-
-            abort = true;
-            break;
-        case ECT_BIT1:
-        case ECT_BIT2:
-        case ECT_BIT3:
-        case ECT_BIT4:
-        case ECT_BIT5:
-        case ECT_BIT6:
-        case ECT_BIT7:
-        case ECT_BIT8:
-        case ECT_VISIBLE_STRING:
-            abort = true;
-
-            resp.error_message = string("not implemented data_type: ") +
-                        data_type_to_string(elem_desc.data_type);
-            break;
-        case ECT_OCTET_STRING: {
-            py_list *plist  = dynamic_cast<py_list *>(pval);
-            if (!plist) {
-                log(warning, "pylist is null on OCTET_STRING\n");
-                break;
-            }
-            int num = 0;
-            uint8_t *tmp = &value[0];
-            for (py_list_value_t::iterator it = plist->value.begin();
-                    it != plist->value.end(); ++it) {
-                //py_long *plongval2     = dynamic_cast<py_long *>(*it);
-                py_int *pintval2     = dynamic_cast<py_int *>(*it);
-                tmp[num++] = (int)*pintval2;
-            }
-            break;
-        }
-        default:
-            break;
-    }
-    
-    if (pval)
-        delete pval;
-
-    if (!abort) {
-        try {
-            _instance->write_element(req.index, req.sub_index, value);
-        } catch (std::exception& e) {
-            resp.error_message = e.what();
-        }
-    } 
 }
 
 //! svc_object_dictionary_list
@@ -562,7 +354,7 @@ void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_
         resp.error_message = e.what();
     }
 }
-        
+
 //! svc_pop_emergency_message
 /*!
  * \param[in]   req     Service request data.
@@ -570,7 +362,7 @@ void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_
  */
 void canopen_protocol::handler::svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp) {
     emergency_message_t msg;
-    
+
     try {
         _instance->pop_emergency_message(msg);
 
