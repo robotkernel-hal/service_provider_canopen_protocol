@@ -93,6 +93,8 @@ namespace service_provider {
 
         //! read or write canopen element values
         typedef std::vector<uint8_t> element_t;
+        
+        element_t string_to_value(std::string string_val, uint16_t data_type, size_t bit_length);
 
         /** Ethercat data types */
         typedef enum {
@@ -128,7 +130,68 @@ namespace service_provider {
             ECT_BIT8            = 0x0037
         } ec_data_type;
 
-        static element_t string_to_value(std::string string_val, uint16_t data_type, size_t bit_length) {
+
+        class base : public robotkernel::service_interface {
+            public:
+                //! construction
+                base(std::string owner, std::string service_prefix)
+                : robotkernel::service_interface(owner, service_prefix + ".canopen_protocol") {};
+
+                //! destruction
+                virtual ~base() = 0;
+
+                //! return a list with all indices of the object dictionary
+                /*!
+                 * \param list returns the list with all indices
+                 */
+                virtual void get_object_dictionary_list(object_dictionary_list_t& list) = 0;
+
+                //! return a object description of given index
+                /*!
+                 * \param index requested index
+                 * \param desc returns the object description
+                 */
+                virtual void get_object_description(const uint16_t& index, 
+                        object_description_t& desc) = 0;
+                
+                //! return a element description of given index and sub index
+                /*!
+                 * \param index requested index
+                 * \param sub_index requested sub index
+                 * \param desc returns the object description
+                 */
+                virtual void get_element_description(const uint16_t& index, const uint8_t& sub_index,
+                        element_description_t& desc) = 0;
+                
+                //! reads one element
+                /*!
+                 * \param index requested index
+                 * \param sub_index requested sub index
+                 * \param value returns read value 
+                 */
+                virtual void read_element(const uint16_t& index, const uint8_t& sub_index,
+                        element_t& value) = 0;
+
+                //! writes one element
+                /*!
+                 * \param index requested index
+                 * \param sub_index requested sub index
+                 * \param value value to write
+                 */
+                virtual void write_element(const uint16_t& index, const uint8_t& sub_index,
+                        const element_t& value) = 0;
+
+                //! pop next emergency message, throw exception if non present
+                /*!
+                 * \param msg return emergency message
+                 */
+                virtual void pop_emergency_message(emergency_message_t& msg) = 0;
+
+        };
+
+        inline base::~base() { }
+
+        inline element_t string_to_value(std::string string_val, uint16_t data_type, size_t bit_length) {
             element_t value;
 
             std::unique_ptr<string_util::py_value> pval(string_util::eval_full(string_val));
@@ -283,67 +346,6 @@ namespace service_provider {
             }
             return value;
         }
-
-        class base : public robotkernel::service_interface {
-            public:
-                //! construction
-                base(std::string owner, std::string service_prefix)
-                : robotkernel::service_interface(owner, service_prefix + ".canopen_protocol") {};
-
-                //! destruction
-                virtual ~base() = 0;
-
-                //! return a list with all indices of the object dictionary
-                /*!
-                 * \param list returns the list with all indices
-                 */
-                virtual void get_object_dictionary_list(object_dictionary_list_t& list) = 0;
-
-                //! return a object description of given index
-                /*!
-                 * \param index requested index
-                 * \param desc returns the object description
-                 */
-                virtual void get_object_description(const uint16_t& index, 
-                        object_description_t& desc) = 0;
-                
-                //! return a element description of given index and sub index
-                /*!
-                 * \param index requested index
-                 * \param sub_index requested sub index
-                 * \param desc returns the object description
-                 */
-                virtual void get_element_description(const uint16_t& index, const uint8_t& sub_index,
-                        element_description_t& desc) = 0;
-                
-                //! reads one element
-                /*!
-                 * \param index requested index
-                 * \param sub_index requested sub index
-                 * \param value returns read value 
-                 */
-                virtual void read_element(const uint16_t& index, const uint8_t& sub_index,
-                        element_t& value) = 0;
-
-                //! writes one element
-                /*!
-                 * \param index requested index
-                 * \param sub_index requested sub index
-                 * \param value value to write
-                 */
-                virtual void write_element(const uint16_t& index, const uint8_t& sub_index,
-                        const element_t& value) = 0;
-
-                //! pop next emergency message, throw exception if non present
-                /*!
-                 * \param msg return emergency message
-                 */
-                virtual void pop_emergency_message(emergency_message_t& msg) = 0;
-
-        };
-
-        inline base::~base() { }
-
     }; // namespace canopen_protocol
 
 }; // namespace service_provider
