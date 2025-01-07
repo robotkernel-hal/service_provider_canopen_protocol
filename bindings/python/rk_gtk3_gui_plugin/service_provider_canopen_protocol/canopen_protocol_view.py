@@ -159,6 +159,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
 
         d = self.current_device.canopen_dictionary
         commun = {key: value for i, (key, value) in enumerate(d.items()) if (key >= 0x1000 and key <  0x1600) or (key >= 0x1800 and key < 0x1A00) or (key > 0x1C00 and key < 0x2000)}
+
         rxpdos = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x1600 and key <  0x1800}
         txpdos = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x1A00 and key <  0x1C00}
         user   = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0x2000 and key <  0x6000}
@@ -167,9 +168,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         device = {key: value for i, (key, value) in enumerate(d.items()) if key >= 0xF000}
         rest   = {key: value for i, (key, value) in enumerate(d.items()) if key <  0x1000 or (key >= 0xB000 and key < 0xF000)}
 
-        # FIXME: Replace this with a loop
-        list(map(lambda x: self.treestore_dictionary.insert(None, -1, [x, "", self.current_device]), rest))
-                #self.current_device.canopen_dictionary))
+        list(map(lambda x: self.treestore_dictionary.insert(None, -1, [x, "", self.current_device, True]), rest))
 
         commun_it = self.treestore_dictionary.insert(None, -1, [0x1000, "Communication", "0x1000-0x1FFF", True])
         list(map(lambda x: self.treestore_dictionary.insert(commun_it, -1, [x, "", self.current_device, True]), commun))
