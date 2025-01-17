@@ -214,6 +214,106 @@ class canopen_treeview(object):
         column  = view.get_column(col_cnt - 1)
         column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         column.set_resizable(True)
+        
+        def cb_objaccess(column, cell, store, tree_iter):
+            def decode_access(acc):
+                ret = ""
+                if (acc & 0x7) == 0x7:
+                    ret += "R "
+                elif (acc & 0x7) == 0x3:
+                    ret += "R(PO,SO) "
+                elif (acc & 0x7) == 0x1:
+                    ret += "R(PO) "
+                elif (acc & 0x7) == 0x5:
+                    ret += "R(PO,O) "
+                elif (acc & 0x7) == 0x2:
+                    ret += "R(SO) "
+                elif (acc & 0x7) == 0x4:
+                    ret += "R(O) "
+                elif (acc & 0x7) == 0x6:
+                    ret += "R(SO,O) "
+
+                if (acc & 0x38) == 0x38:
+                    ret += "W "
+                elif (acc & 0x38) == 0x18:
+                    ret += "W(PO,SO) "
+                elif (acc & 0x38) == 0x8:
+                    ret += "W(PO) "
+                elif (acc & 0x38) == 0x28:
+                    ret += "W(PO,O) "
+                elif (acc & 0x38) == 0x10:
+                    ret += "W(SO) "
+                elif (acc & 0x38) == 0x20:
+                    ret += "W(O) "
+                elif (acc & 0x38) == 0x30:
+                    ret += "W(SO,O) "
+
+                if (acc & 0x40) == 0x40:
+                    ret += "RxPDO "
+                
+                if (acc & 0x80) == 0x80:
+                    ret += "TxPDO "
+
+                if (acc & 0x100) == 0x100:
+                    ret += "Backup "
+
+                if (acc & 0x200) == 0x200:
+                    ret += "Setting "
+
+                return ret
+
+            parent_iter = store.iter_parent(tree_iter)
+            if not helpers.treestore_helpers.is_row_visible(store, tree_iter, self.treeview_dictionary):
+                return
+
+            row = store[tree_iter]
+            device = row[2]
+
+            if parent_iter and type(store[parent_iter][2]) != str:
+                index        = store[parent_iter][0]
+                sub_index    = row[0]
+                can_object       = device.canopen_dictionary[index]
+                element      = can_object.subindices[sub_index]
+                element.get_data()
+                cell.set_property("text", decode_access(int(element.obj_access)))
+            elif type(store[tree_iter][2]) == str:
+                cell.set_property("text", "")
+            else:
+                path         = store.get_path(tree_iter)
+                index        = row[0]
+                can_object       = device.canopen_dictionary[index]
+                can_object.get_data()
+
+                if can_object.objcode == 8 or can_object.objcode == 9:
+                    sub_iter = search([row, ], match_func, ([0, 0], ))
+                    if sub_iter is None:
+                        self.treestore_dictionary.insert(tree_iter, -1, [0, "", device, True])
+
+                    if self.treeview_dictionary.row_expanded(path):
+                        for sub in range(1, can_object.max_subindices + 1):
+                            element      = can_object.subindices[sub]
+                            element.get_data()
+                            if element.data_type != 0:
+                                sub_iter = search([row, ], match_func, ([0, sub], ))
+                                if sub_iter is None:
+                                    self.treestore_dictionary.insert(tree_iter, -1, [sub, "", device, False])
+                    cell.set_property("text", "")
+                elif can_object.objcode == 7:
+                    try:
+                        element      = can_object.subindices[0]
+                        element.get_data()
+                        cell.set_property("text", decode_access(int(element.obj_access)))
+                    except KeyError:
+                        logger.warning("treeview.cb_data(): key 0 not found")
+                        return False
+                else:
+                    cell.set_property("text", "")
+            return True
+
+        col_cnt = view.insert_column_with_data_func(-1, "Can_Object access", Gtk.CellRendererText(), cb_objaccess)
+        column  = view.get_column(col_cnt - 1)
+        column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
+        column.set_resizable(True)
 
         # ------------------ data column -------------------
         def cb_data(column, cell, store, tree_iter):

@@ -34,6 +34,7 @@ class canopen_element(object):
         self.sub_index = sub_index
         self.name = None
         self.value = None
+        self.obj_access = None
         self.objcode = 0
         self.data_type = 0
         self.fd_get_data = None
