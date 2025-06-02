@@ -210,7 +210,7 @@ class canopen_treeview(object):
                     cell.set_property("text", "unknown 0x%X" % can_object.objcode)
             return True
 
-        col_cnt = view.insert_column_with_data_func(-1, "Can_Object code", Gtk.CellRendererText(), cb_objcode)
+        col_cnt = view.insert_column_with_data_func(-1, "Objectcode", Gtk.CellRendererText(), cb_objcode)
         column  = view.get_column(col_cnt - 1)
         column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         column.set_resizable(True)
@@ -310,7 +310,7 @@ class canopen_treeview(object):
                     cell.set_property("text", "")
             return True
 
-        col_cnt = view.insert_column_with_data_func(-1, "Can_Object access", Gtk.CellRendererText(), cb_objaccess)
+        col_cnt = view.insert_column_with_data_func(-1, "Access", Gtk.CellRendererText(), cb_objaccess)
         column  = view.get_column(col_cnt - 1)
         column.set_sizing(Gtk.TreeViewColumnSizing.AUTOSIZE)
         column.set_resizable(True)
