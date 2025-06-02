@@ -109,6 +109,7 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
         self.canopen_protocol_refresh_btn.connect("clicked", self.on_refresh)
         self.active_color = helpers.gui_utils.get_active_color_str(self.app.window)
         self.create_treeview(self.canopen_protocol_tv)
+        self.canopen_protocol_tv.expand_all()
         self.tv = self.treeview_dictionary
         self.tv.expand_all()
 
@@ -190,3 +191,5 @@ class canopen_protocol_view(helpers.service_provider_view, helpers.builder_base,
 
         device_it = self.treestore_dictionary.insert(None, -1, [0xF000, "Device", "0xF000-0xFFFF", True])
         list(map(lambda x: self.treestore_dictionary.insert(device_it, -1, [x, "", self.current_device, True]), device))
+        
+        self.canopen_protocol_tv.expand_all()
