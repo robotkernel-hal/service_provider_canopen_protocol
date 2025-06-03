@@ -17,7 +17,8 @@ class service_provider_canopen_protocol_rkgui(ConanFile):
     exports_sources = os.path.join(pure_python_folder, "*")
 
     def requirements(self):
-        self.requires(f"service_provider_canopen_protocol_ln_msgdef/{self.version}@{self.user}/{self.channel}")
+        #self.requires(f"service_provider_canopen_protocol_ln_msgdef/{self.version}@{self.user}/{self.channel}")
+        self.requires(f"service_provider_canopen_protocol_ln_msgdef/5.1.10@robotkernel/stable")
 
     def package(self):
         copy(self, os.path.join(self.pure_python_folder, "*"), self.source_folder, self.package_folder)
