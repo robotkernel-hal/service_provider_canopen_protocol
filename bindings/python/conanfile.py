@@ -13,7 +13,7 @@ class service_provider_canopen_protocol_rkgui(ConanFile):
 
     url = f"https://rmc-github.robotic.dlr.de/robotkernel/service_provider_canopen_protocol"
     settings = "os"
-    pure_python_folder = os.path.join("bindings", "python")
+    pure_python_folder = "."
     exports_sources = os.path.join(pure_python_folder, "*")
 
     def requirements(self):
