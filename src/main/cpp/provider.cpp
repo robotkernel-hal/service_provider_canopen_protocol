@@ -29,7 +29,6 @@
 #include "provider.h"
 #include "service_definitions.h"
 
-#include "robotkernel/kernel.h"
 #include "robotkernel/exceptions.h"
 
 SERVICE_PROVIDER_DEF(provider, service_provider::canopen_protocol::provider)
