@@ -28,6 +28,7 @@
 #include <list>
 
 #include "robotkernel/service_interface.h"
+#include "string_util/string_util.h"
 #include <exception>
 
 
