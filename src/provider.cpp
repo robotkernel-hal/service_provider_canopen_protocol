@@ -31,13 +31,12 @@
 
 #include "robotkernel/exceptions.h"
 
-SERVICE_PROVIDER_DEF(provider, service_provider::canopen_protocol::provider)
+SERVICE_PROVIDER_DEF(provider, service_provider_canopen_protocol::provider)
 
 using namespace std;
 using namespace std::placeholders;
 using namespace robotkernel;
-using namespace service_provider;
-using namespace canopen_protocol;
+using namespace service_provider_canopen_protocol;
 using namespace string_util;
 
 string data_type_to_string(uint16_t dtype) {
@@ -231,10 +230,10 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
     }
 }
 
-canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& req)
+handler::handler(const robotkernel::sp_service_interface_t& req)
     : log_base(req->owner, "canopen_protocol", req->device_name)
 {
-    _instance = std::dynamic_pointer_cast<service_provider::canopen_protocol::base>(req);
+    _instance = std::dynamic_pointer_cast<service_provider_canopen_protocol::base>(req);
     if (!_instance)
         throw str_exception("wrong base class");
 
@@ -245,14 +244,14 @@ canopen_protocol::handler::handler(const robotkernel::sp_service_interface_t& re
     add_svc_pop_emergency_message(req->owner, _instance->device_name + ".pop_emergency_message");
 }
 
-canopen_protocol::handler::~handler() {}
+handler::~handler() {}
 
 //! svc_read_element
 /*!
  * \param[in]   req     Service request data.
  * \param[out]  resp    Service response data.
  */
-void canopen_protocol::handler::svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp) {
+void handler::svc_read_element(const struct svc_req_read_element& req, struct svc_resp_read_element& resp) {
     element_description_t elem_desc;
     element_t value;
 
@@ -302,7 +301,7 @@ void canopen_protocol::handler::svc_read_element(const struct svc_req_read_eleme
  * \param[in]   req     Service request data.
  * \param[out]  resp    Service response data.
  */
-void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object& req, struct svc_resp_read_object& resp) {
+void handler::svc_read_object(const struct svc_req_read_object& req, struct svc_resp_read_object& resp) {
     object_description_t obj_desc;
 
     try {
@@ -321,7 +320,7 @@ void canopen_protocol::handler::svc_read_object(const struct svc_req_read_object
  * \param[in]   req     Service request data.
  * \param[out]  resp    Service response data.
  */
-void canopen_protocol::handler::svc_write_element(const struct svc_req_write_element& req, struct svc_resp_write_element& resp) {
+void handler::svc_write_element(const struct svc_req_write_element& req, struct svc_resp_write_element& resp) {
     element_description_t elem_desc;
     element_t value;
 
@@ -344,7 +343,7 @@ void canopen_protocol::handler::svc_write_element(const struct svc_req_write_ele
  * \param[in]   req     Service request data.
  * \param[out]  resp    Service response data.
  */
-void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_object_dictionary_list& req, struct svc_resp_object_dictionary_list& resp) {
+void handler::svc_object_dictionary_list(const struct svc_req_object_dictionary_list& req, struct svc_resp_object_dictionary_list& resp) {
     try {
         object_dictionary_list_t tmp_list;
         _instance->get_object_dictionary_list(tmp_list);
@@ -359,7 +358,7 @@ void canopen_protocol::handler::svc_object_dictionary_list(const struct svc_req_
  * \param[in]   req     Service request data.
  * \param[out]  resp    Service response data.
  */
-void canopen_protocol::handler::svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp) {
+void handler::svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp) {
     emergency_message_t msg;
 
     try {

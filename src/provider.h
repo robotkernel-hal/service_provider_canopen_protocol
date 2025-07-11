@@ -35,11 +35,10 @@
 #include "robotkernel/log_base.h"
 
 // Service provider includes
-#include "service_provider/canopen_protocol/base.h"
+#include "service_provider_canopen_protocol/base.h"
 #include "service_definitions.h"
 
-namespace service_provider {
-namespace canopen_protocol {
+namespace service_provider_canopen_protocol {
 
 // forward declaration
 class handler;
@@ -64,7 +63,7 @@ class handler :
     public svc_base_pop_emergency_message
 {
     public:
-        typedef std::shared_ptr<service_provider::canopen_protocol::base> sp_cp_base_t;
+        typedef std::shared_ptr<service_provider_canopen_protocol::base> sp_cp_base_t;
         sp_cp_base_t _instance;
 
         //! handler construction
@@ -109,8 +108,7 @@ class handler :
         virtual void svc_pop_emergency_message(const struct svc_req_pop_emergency_message& req, struct svc_resp_pop_emergency_message& resp);
 };
 
-} // namepace canopen_protocol
-} // namespace service_provider
+}; // namepace canopen_protocol_service_provider
 
 #endif // __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__
 
