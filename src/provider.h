@@ -1,29 +1,30 @@
-//! robotkernel interface canopen protocol
+//! service provider canopen protocol
 /*!
- * author: Robert Burger
+ * author: Robert Burger <robert.burger@dlr.de>
  */
 
 // vim: tabstop=4 softtabstop=4 shiftwidth=4 expandtab:
 
 /*
- * This file is part of robotkernel.
+ * This file is part of service_provider_canopen_protocol.
  *
- * robotkernel is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * robotkernel is distributed in the hope that it will be useful,
+ * service_provider_canopen_protocol is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ * 
+ * service_provider_canopen_protocol is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with robotkernel.  If not, see <http://www.gnu.org/licenses/>.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with service_provider_canopen_protocol; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__
-#define __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__
+#ifndef SERVICE_PROVIDER_CANOPEN_PROTOCOL__PROVIDER_H
+#define SERVICE_PROVIDER_CANOPEN_PROTOCOL__PROVIDER_H
 
 // Standard includes
 #include <string.h>
@@ -110,5 +111,5 @@ class handler :
 
 }; // namepace canopen_protocol_service_provider
 
-#endif // __SERVICE_PROVIDER__CANOPEN_PROTOCOL_H__
+#endif // SERVICE_PROVIDER_CANOPEN_PROTOCOL__PROVIDER_H
 
