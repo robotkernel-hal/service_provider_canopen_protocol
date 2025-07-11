@@ -26,8 +26,6 @@
 
 #include <string.h>
 
-#include "string_util/string_util.h"
-
 #include "provider.h"
 #include "service_definitions.h"
 
@@ -39,7 +37,6 @@ using namespace std;
 using namespace std::placeholders;
 using namespace robotkernel;
 using namespace service_provider_canopen_protocol;
-using namespace string_util;
 
 string data_type_to_string(uint16_t dtype) {
     switch(dtype) {
@@ -99,7 +96,7 @@ string data_type_to_string(uint16_t dtype) {
             break;
     }
 
-    return format_string("Type 0x%4.4X", dtype);
+    return string_printf("Type 0x%4.4X", dtype);
 }
 
 typedef const std::map<uint32_t, std::string> abort_code_map_t;
@@ -163,12 +160,12 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
     if (    (   ((index & 0x1600) == 0x1600) ||
                 ((index & 0x1A00) == 0x1A00)) &&
             ( dtype == ECT_UNSIGNED32))
-        return format_string("0x%08X", *(uint32_t *)usdo);
+        return string_printf("0x%08X", *(uint32_t *)usdo);
 
     if (    (   ( index           == 0x1C12) ||
                 ( index           == 0x1C13)) &&
             ( dtype == ECT_UNSIGNED16))
-        return format_string("0x%04X", *(uint16_t *)usdo);
+        return string_printf("0x%04X", *(uint16_t *)usdo);
 
     switch (dtype) {
         case ECT_BOOLEAN:
@@ -177,33 +174,33 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             else
                 return string("False");
         case ECT_INTEGER8:
-            return format_string("%d", *(int8_t *)usdo);
+            return string_printf("%d", *(int8_t *)usdo);
         case ECT_INTEGER16:
-            return format_string("%d", *(int16_t *)usdo);
+            return string_printf("%d", *(int16_t *)usdo);
         case ECT_INTEGER32:
         case ECT_INTEGER24:
-            return format_string("%d", *(int32_t *)usdo);
+            return string_printf("%d", *(int32_t *)usdo);
         case ECT_INTEGER64:
-            return format_string("%lld", *(int64_t *)usdo);
+            return string_printf("%lld", *(int64_t *)usdo);
         case ECT_UNSIGNED8:
-            return format_string("%u", *(uint8_t *)usdo);
+            return string_printf("%u", *(uint8_t *)usdo);
         case ECT_UNSIGNED16:
-            return format_string("%u", *(uint16_t *)usdo);
+            return string_printf("%u", *(uint16_t *)usdo);
         case ECT_UNSIGNED32:
         case ECT_UNSIGNED24:
-            return format_string("%u", *(uint32_t *)usdo);
+            return string_printf("%u", *(uint32_t *)usdo);
         case ECT_UNSIGNED64:
-            return format_string("%llu", *(uint64_t *)usdo);
+            return string_printf("%llu", *(uint64_t *)usdo);
         case ECT_REAL32:
-            return format_string("%f", *(float *)usdo);
+            return string_printf("%f", *(float *)usdo);
         case ECT_REAL64:
-            return format_string("%f", *(double *)usdo);
+            return string_printf("%f", *(double *)usdo);
         case ECT_BYTE:
-            return format_string("0x%02X", *(uint8_t *)usdo);
+            return string_printf("0x%02X", *(uint8_t *)usdo);
         case ECT_WORD:
-            return format_string("0x%04X", *(uint16_t *)usdo);
+            return string_printf("0x%04X", *(uint16_t *)usdo);
         case ECT_DWORD:
-            return format_string("0x%08X", *(uint32_t *)usdo);
+            return string_printf("0x%08X", *(uint32_t *)usdo);
         case ECT_BIT1:
         case ECT_BIT2:
         case ECT_BIT3:
@@ -212,7 +209,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
         case ECT_BIT6:
         case ECT_BIT7:
         case ECT_BIT8:
-            return format_string("0x%X", *(uint8_t *)usdo);
+            return string_printf("0x%X", *(uint8_t *)usdo);
         case ECT_VISIBLE_STRING:
             return to_unicode((char *)usdo, l);
         default:
@@ -220,7 +217,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
             string ans = "[ ";
 
             for (int i = 0; i < l; ++i) {
-                ans += format_string("0x%2.2x ", usdo[i]);
+                ans += string_printf("0x%2.2x ", usdo[i]);
                 if (i < l)
                     ans += ", ";
             }
@@ -237,7 +234,7 @@ handler::handler(const robotkernel::sp_service_interface_t& req)
 {
     _instance = std::dynamic_pointer_cast<service_provider_canopen_protocol::base>(req);
     if (!_instance)
-        throw str_exception("wrong base class");
+        throw runtime_error(string("wrong base class"));
 
     add_svc_read_element(req->owner, _instance->device_name + ".read_element");
     add_svc_read_object(req->owner, _instance->device_name + ".read_object");
@@ -292,7 +289,7 @@ void handler::svc_read_element(const struct svc_req_read_element& req, struct sv
         // decode value
         resp.value = value_2_string(&value[0], value.size(), elem_desc.data_type, req.index);
     } catch (sdo_abort_exception& e) {
-        resp.error_message = format_string("got sdo abort : %08X\n", e.abort_code);
+        resp.error_message = string_printf("got sdo abort : %08X\n", e.abort_code);
     } catch (std::exception& e) {
         resp.error_message += e.what();
     }

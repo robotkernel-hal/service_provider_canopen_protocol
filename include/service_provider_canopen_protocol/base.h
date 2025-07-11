@@ -27,10 +27,12 @@
 #ifndef SERVICE_PROVIDER_CANOPEN_PROTOCOL__BASE_H
 #define SERVICE_PROVIDER_CANOPEN_PROTOCOL__BASE_H
 
+#include "limits.h"
+
 #include <list>
+#include <exception>
 
 #include "robotkernel/service_interface.h"
-#include <exception>
 
 namespace service_provider_canopen_protocol {
 
@@ -190,125 +192,130 @@ class base : public robotkernel::service_interface {
 
 inline base::~base() { }
 
+
 inline element_t string_to_value(std::string string_val, uint16_t data_type, size_t bit_length) {
     element_t value;
 
-    std::unique_ptr<string_util::py_value> pval(string_util::eval_full(string_val));
-    string_util::py_int *pintval;
-    string_util::py_long *plongval;
-    string_util::py_float *pfloatval;
-    string_util::py_special *pspval;
     bool abort;
     size_t bytelen;
     bytelen = (bit_length + 7) / 8;
     value.resize(bytelen);
 
-    pintval = dynamic_cast<string_util::py_int *>(pval.get());
-    plongval = dynamic_cast<string_util::py_long *>(pval.get());
-    pfloatval = dynamic_cast<string_util::py_float *>(pval.get());
-    pspval = dynamic_cast<string_util::py_special *>(pval.get());
     abort = false;
 
     switch(data_type) {
         case ECT_BOOLEAN:
-            if(!pspval) {
+            transform(string_val.begin(), string_val.end(), string_val.begin(), ::tolower);
+            if (    !string_val.compare("false") ||
+                    !string_val.compare("0")    ) {
+                (*(uint8_t *)&value[0]) = 0;
+            } else {
+                (*(uint8_t *)&value[0]) = 1;
+            }
+            break;
+        case ECT_INTEGER8: {
+            int tmp_value;
+            try { tmp_value = std::stoi(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (    (tmp_value < SCHAR_MIN) || (tmp_value > SCHAR_MAX)    ) { 
                 abort = true;
                 break;
             }
-            (*(uint8_t *)&value[0]) = (bool)*pspval;
+            (*(int8_t *)&value[0]) = (int8_t)tmp_value;
             break;
-        case ECT_INTEGER8:
-            if(!pintval) {
+        }
+        case ECT_INTEGER16: {
+            int tmp_value;
+            try { tmp_value = std::stoi(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (    (tmp_value < SHRT_MIN) || (tmp_value > SHRT_MAX)    ) {
                 abort = true;
                 break;
             }
-            (*(int8_t *)&value[0]) = (int)*pintval;
+            (*(int16_t *)&value[0]) = (int16_t)tmp_value;
             break;
-        case ECT_INTEGER16:
-            if(!pintval) {
+        }
+        case ECT_INTEGER32: {
+            int tmp_value;
+            try { tmp_value = std::stoi(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (    (tmp_value < INT_MIN) || (tmp_value > INT_MAX)    ) {
                 abort = true;
                 break;
             }
-            (*(int16_t *)&value[0]) = (int)*pintval;
+            (*(int32_t *)&value[0]) = (int32_t)tmp_value;
             break;
-        case ECT_INTEGER32:
-        case ECT_INTEGER24:
-            if(!pintval) {
+        }
+        case ECT_INTEGER24: {
+            int tmp_value;
+            try { tmp_value = std::stoi(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (    (tmp_value < INT_MIN/2) || (tmp_value > INT_MAX/2)    ) {
                 abort = true;
                 break;
             }
-            (*(int32_t *)&value[0]) = (int)*pintval;
+            (*(int32_t *)&value[0]) = (int32_t)tmp_value;
             break;
+        }
         case ECT_INTEGER64: {
-            if(!pintval) {
+            long tmp_value;
+            try { tmp_value = std::stol(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (    (tmp_value < LONG_MIN) || (tmp_value > LONG_MAX)    ) {
                 abort = true;
                 break;
             }
-            if(plongval)
-                (*(int64_t *)&value[0]) = (int64_t)*plongval;
-            else
-                (*(int64_t *)&value[0]) = (int)*pintval;
+            (*(int64_t *)&value[0]) = (int64_t)tmp_value;
             break;
         }
-        case ECT_UNSIGNED8:
-            if(!pintval) {
+        case ECT_UNSIGNED8: {
+            unsigned long tmp_value;
+            try { tmp_value = std::stoul(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (tmp_value > CHAR_MAX) { 
                 abort = true;
                 break;
             }
-            (*(uint8_t *)&value[0]) = (unsigned int)*pintval;
+            (*(uint8_t *)&value[0]) = (uint8_t)tmp_value;
             break;
-        case ECT_UNSIGNED16:
-            if(!pintval) {
+        }
+        case ECT_UNSIGNED16: {
+            unsigned long tmp_value;
+            try { tmp_value = std::stoul(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (tmp_value > USHRT_MAX) { 
                 abort = true;
                 break;
             }
-            (*(uint16_t *)&value[0]) = (unsigned int)*pintval;
+            (*(uint16_t *)&value[0]) = (uint16_t)tmp_value;
             break;
+        }
         case ECT_UNSIGNED32:
-        case ECT_UNSIGNED24:
-            if(!pintval) {
+        case ECT_UNSIGNED24: {
+            unsigned long tmp_value;
+            try { tmp_value = std::stoul(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (tmp_value > UINT_MAX) { 
                 abort = true;
                 break;
             }
-            (*(uint32_t *)&value[0]) = (unsigned int)*pintval;
-            break;
-        case ECT_UNSIGNED64: {
-            if(!pintval) {
-                abort = true;
-                break;
-            }
-            if(plongval)
-                (*(uint64_t *)&value[0]) = (int64_t)*plongval;
-            else
-                (*(uint64_t *)&value[0]) = (unsigned int)*pintval;
+            (*(uint32_t *)&value[0]) = (uint32_t)tmp_value;
             break;
         }
-        case ECT_REAL32:
-            if(pfloatval) {
-                (*(float *)&value[0]) = (float)*pfloatval;
-                break;
-            } else if(pintval) {
-                (*(float *)&value[0]) = (float)*pintval;
-                break;
-            } else if(plongval) {
-                (*(float *)&value[0]) = (float)*plongval;
+        case ECT_UNSIGNED64: {
+            unsigned long tmp_value;
+            try { tmp_value = std::stoul(string_val, nullptr, 0); } catch (...) { abort = true; break; }
+            if (tmp_value > ULONG_MAX) { 
+                abort = true;
                 break;
             }
-            abort = true;
+            (*(uint64_t *)&value[0]) = (uint64_t)tmp_value;
             break;
-        case ECT_REAL64:
-            if(pfloatval) {
-                (*(float *)&value[0]) = (float)*pfloatval;
-                break;
-            } else if(pintval) {
-                (*(float *)&value[0]) = (float)*pintval;
-                break;
-            } else if(plongval) {
-                (*(float *)&value[0]) = (float)*plongval;
-                break;
-            }
-            abort = true;
+        }
+        case ECT_REAL32: {
+            float tmp_value;
+            try { tmp_value = std::stof(string_val); } catch (...) { abort = true; break; }
+            (*(float *)&value[0]) = (float)tmp_value;
             break;
+        }
+        case ECT_REAL64: {
+            double tmp_value;
+            try { tmp_value = std::stof(string_val); } catch (...) { abort = true; break; }
+            (*(double *)&value[0]) = (double)tmp_value;
+            break;
+        }
         case ECT_BIT1:
         case ECT_BIT2:
         case ECT_BIT3:
@@ -323,17 +330,21 @@ inline element_t string_to_value(std::string string_val, uint16_t data_type, siz
             std::copy(string_val.begin(), string_val.end(), value.begin());
         } break;
         case ECT_OCTET_STRING: {
-            string_util::py_list* plist = dynamic_cast<string_util::py_list*>(pval.get());
-            if(!plist) {
-                break;
-            }
             int num = 0;
             uint8_t *tmp = &value[0];
-            for(string_util::py_list_value_t::iterator it = plist->value.begin();
-                    it != plist->value.end();
-                    ++it) {
-                string_util::py_int *pintval2 = dynamic_cast<string_util::py_int *>(*it);
-                tmp[num++] = (int)*pintval2;
+            std::string tmp_value = string_val;
+            std::string::size_type a = tmp_value.find_first_not_of("[ ,]");
+
+            while (a != std::string::npos) {
+                tmp_value = tmp_value.substr(a);
+
+                std::size_t b;
+                tmp[num++] = (uint8_t)std::stoi(tmp_value, &b, 0);
+
+                if (b > 0) {
+                    tmp_value = tmp_value.substr(b);
+                    a = tmp_value.find_first_not_of("[ ,]");
+                }
             }
             break;
         }
