@@ -1,0 +1,23 @@
+Source: service-provider-canopen-protocol
+Priority: optional
+Maintainer: Robert Burger <robert.burger@dlr.de>
+Build-Depends: debhelper-compat (= 13), autotools-dev
+Standards-Version: 4.5.1
+Section: libs
+Homepage: https://www.burger-system.de/robotkernel/service_provider_canopen_protocol
+Vcs-Browser: https://github.com/robotkernel-hal/service_provider_canopen_protocol.git
+Vcs-Git: https://github.com/robotkernel-hal/service_provider_canopen_protocol.git
+Rules-Requires-Root: no
+
+Package: service-provider-canopen-protocol-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: robotkernel-dev (= ${binary:Version}), ${misc:Depends}
+Description: TODO
+
+Package: service-provider-canopen-protocol
+Architecture: any
+Multi-Arch: same
+Depends: robotkernel ${misc:Depends}
+Description: TODO
