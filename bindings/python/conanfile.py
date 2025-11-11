@@ -14,18 +14,17 @@ class service_provider_canopen_protocol_rkgui(ConanFile):
     url = f"https://rmc-github.robotic.dlr.de/robotkernel/service_provider_canopen_protocol"
     settings = "os"
     pure_python_folder = "."
-    exports_sources = os.path.join(pure_python_folder, "*")
+    exports_sources = [ "*",  os.path.join(pure_python_folder, "*") ]
 
     def requirements(self):
-        #self.requires(f"service_provider_canopen_protocol_ln_msgdef/{self.version}@{self.user}/{self.channel}")
-        self.requires(f"service_provider_canopen_protocol_ln_msgdef/5.1.10@robotkernel/stable")
+        self.requires(f"service_provider_canopen_protocol_ln_msgdef/{self.version}@{self.user}/{self.channel}")
 
     def package(self):
-        copy(self, os.path.join(self.pure_python_folder, "*"), self.source_folder, self.package_folder)
+        copy(self, "*", self.source_folder, self.package_folder)
 
     def package_info(self):
-        pypath1 = os.path.join(self.package_folder, os.path.dirname(self.pure_python_folder))
-        pypath2 = os.path.join(self.package_folder, self.pure_python_folder)
+        pypath1 = os.path.join(self.package_folder, "rk_gtk3_gui_plugin")
+        pypath2 = os.path.join(self.package_folder, "rk_gui_plugin")
         if Version(conan_version) < "2.0.0":
             self.env_info.PYTHONPATH.append(pypath1)
             self.env_info.PYTHONPATH.append(pypath2)
