@@ -36,6 +36,7 @@ SERVICE_PROVIDER_DEF(provider, service_provider_canopen_protocol::provider)
 using namespace std;
 using namespace std::placeholders;
 using namespace robotkernel;
+using namespace robotkernel::helpers;
 using namespace service_provider_canopen_protocol;
 
 string data_type_to_string(uint16_t dtype) {
@@ -181,7 +182,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
         case ECT_INTEGER24:
             return string_printf("%d", *(int32_t *)usdo);
         case ECT_INTEGER64:
-            return string_printf("%lld", *(int64_t *)usdo);
+            return string_printf("%zd", *(int64_t *)usdo);
         case ECT_UNSIGNED8:
             return string_printf("%u", *(uint8_t *)usdo);
         case ECT_UNSIGNED16:
@@ -190,7 +191,7 @@ string value_2_string(uint8_t *usdo, int l, uint16_t dtype, uint16_t index) {
         case ECT_UNSIGNED24:
             return string_printf("%u", *(uint32_t *)usdo);
         case ECT_UNSIGNED64:
-            return string_printf("%llu", *(uint64_t *)usdo);
+            return string_printf("%zu", *(uint64_t *)usdo);
         case ECT_REAL32:
             return string_printf("%f", *(float *)usdo);
         case ECT_REAL64:
