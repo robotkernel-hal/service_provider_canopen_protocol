@@ -1,7 +1,7 @@
 name: service_provider_canopen_protocol/write_element
 request:
-- uint16_t: index
-- uint8_t: sub_index
-- string: value
+- { name: index, type: uint16_t }
+- { name: sub_index, type: uint8_t, default: 0 }
+- { name: value, type: string }
 response:
-- string: error_message
+- { name: error_message, type: string, default: "no error" }
