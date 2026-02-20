@@ -1,6 +1,6 @@
 services:
   - name: service_provider_canopen_protocol/object_dictionary_list
     response:
-      - { name: indices, type: uint16_t, array: indices }
+      - { name: indices, type: uint16_t, array: true }
       - { name: error_message, type: string, default: "no error" }
 
