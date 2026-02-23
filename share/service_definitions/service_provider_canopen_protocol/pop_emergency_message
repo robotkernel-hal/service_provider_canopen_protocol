@@ -1,5 +1,5 @@
 services:
-  - name: service_provider_canopen_protocol/pop_emergency_message
+  service_provider_canopen_protocol/pop_emergency_message:
     response:
       timestamp_sec: { type: uint64_t }
       timestamp_nsec: { type: uint64_t }

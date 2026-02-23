@@ -1,5 +1,5 @@
 services:
-  - name: service_provider_canopen_protocol/read_object
+  service_provider_canopen_protocol/read_object:
     request:
       index: { type: uint16_t }
     response:

@@ -1,5 +1,5 @@
 services:
-  - name: service_provider_canopen_protocol/object_dictionary_list
+  service_provider_canopen_protocol/object_dictionary_list:
     response:
       indices: { type: uint16_t, array: true }
       error_message: { type: string, default: "no error" }

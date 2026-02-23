@@ -1,5 +1,5 @@
 services:
-  - name: service_provider_canopen_protocol/read_element
+  service_provider_canopen_protocol/read_element:
     request:
       index: { type: uint16_t }
       sub_index: { type: uint8_t, default: 0 }
