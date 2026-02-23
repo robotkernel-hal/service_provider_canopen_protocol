@@ -1,10 +1,10 @@
 services:
   - name: service_provider_canopen_protocol/pop_emergency_message
     response:
-      - { name: timestamp_sec , type: uint64_t }
-      - { name: timestamp_nsec, type: uint64_t }
-      - { name: error_code    , type: uint16_t }
-      - { name: error_register, type: uint8_t }
-      - { name: data          , type: uint8_t, array: true }
-      - { name: error_message , type: string, default: "no error" }
+      timestamp_sec: { type: uint64_t }
+      timestamp_nsec: { type: uint64_t }
+      error_code: { type: uint16_t }
+      error_register: { type: uint8_t }
+      data: { type: uint8_t, array: true }
+      error_message: { type: string, default: "no error" }
 

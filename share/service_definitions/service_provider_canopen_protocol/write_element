@@ -1,8 +1,8 @@
 services:
   - name: service_provider_canopen_protocol/write_element
     request:
-      - { name: index, type: uint16_t }
-      - { name: sub_index, type: uint8_t, default: 0 }
-      - { name: value, type: string }
+      index: { type: uint16_t }
+      sub_index: { type: uint8_t, default: 0 }
+      value: { type: string }
     response:
-      - { name: error_message, type: string, default: "no error" }
+      error_message: { type: string, default: "no error" }

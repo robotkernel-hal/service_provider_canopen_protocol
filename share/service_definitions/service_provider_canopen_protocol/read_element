@@ -1,18 +1,18 @@
 services:
   - name: service_provider_canopen_protocol/read_element
     request:
-      - { name: index, type: uint16_t }
-      - { name: sub_index, type: uint8_t, default: 0 }
+      index: { type: uint16_t }
+      sub_index: { type: uint8_t, default: 0 }
     response:
-      - { name: name         , type: string }
-      - { name: value_info   , type: uint8_t }
-      - { name: data_type    , type: uint16_t }
-      - { name: bit_length   , type: uint16_t }
-      - { name: obj_access   , type: uint16_t }
-      - { name: unit         , type: uint16_t }
-      - { name: default_value, type: string }
-      - { name: min_value    , type: string }
-      - { name: max_value    , type: string }
-      - { name: value        , type: string }
-      - { name: error_message, type: string, default: "no error" }
+      name: { type: string }
+      value_info: { type: uint8_t }
+      data_type: { type: uint16_t }
+      bit_length: { type: uint16_t }
+      obj_access: { type: uint16_t }
+      unit: { type: uint16_t }
+      default_value: { type: string }
+      min_value: { type: string }
+      max_value: { type: string }
+      value: { type: string }
+      error_message: { type: string, default: "no error" }
 

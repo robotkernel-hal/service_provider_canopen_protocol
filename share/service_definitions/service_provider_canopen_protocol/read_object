@@ -1,11 +1,11 @@
 services:
   - name: service_provider_canopen_protocol/read_object
     request:
-      - { name: index, type: uint16_t }
+      index: { type: uint16_t }
     response:
-      - { name: data_type, type: uint16_t }
-      - { name: objcode, type: uint8_t }
-      - { name: max_subindices, type: uint8_t }
-      - { name: name, type: string }
-      - { name: error_message, type: string, default: "no error" }
+      data_type: { type: uint16_t }
+      objcode: { type: uint8_t }
+      max_subindices: { type: uint8_t }
+      name: { type: string }
+      error_message: { type: string, default: "no error" }
 
