@@ -3,3 +3,6 @@ SUBDIRS=src
 
 pkgconfig_DATA = service_provider_canopen_protocol.pc
 
+install-exec-hook:
+	mkdir -p $(DESTDIR)$(prefix)/bindings/python
+	-cp -rauf $(srcdir)/bindings/python/* $(DESTDIR)$(prefix)/bindings/python
