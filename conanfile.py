@@ -4,7 +4,7 @@ from conan import ConanFile
 
 
 class MainProject(ConanFile):
-    python_requires = "conan_template/[~6]@robotkernel/unstable"
+    python_requires = "conan_template/[~6]@robotkernel/stable"
     python_requires_extend = "conan_template.RobotkernelConanFile"
 
     name = "service_provider_canopen_protocol"
@@ -12,7 +12,7 @@ class MainProject(ConanFile):
     description = "robotkernel service provider for canopen protocol devices."
     exports_sources = ["*", "!.gitignore", "!bindings"]
 
-    tool_requires = ["robotkernel_generator/[~6]@robotkernel/unstable"]
+    tool_requires = ["robotkernel_generator/[~6]@robotkernel/stable"]
 
     def requirements(self):
         self.requires(f"{self.name}_ln_msgdef/{self.version}@{self.user}/{self.channel}")
