@@ -1,0 +1,1 @@
+. "/home/burger_r/devel/conan/service_provider_canopen_protocol/conan/conanautotoolstoolchain.sh" && . "/home/burger_r/devel/conan/service_provider_canopen_protocol/conan/conanbuildenv-relwithdebinfo-x86_64.sh"

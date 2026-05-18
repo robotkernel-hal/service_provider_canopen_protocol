@@ -1,0 +1,10 @@
+prefix=/volume/conan_cache/burger_r/.conan2/p/robotc5782ce2b811e/p
+libdir=${prefix}/lib
+includedir=${prefix}/include
+bindir=${prefix}/bin
+
+Name: robotkernel
+Description: Conan package: robotkernel
+Version: 6.0.0
+Libs: -L"${libdir}"
+Cflags: -I"${includedir}"

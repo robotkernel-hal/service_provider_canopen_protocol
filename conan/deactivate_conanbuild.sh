@@ -1,0 +1,1 @@
+. "/home/burger_r/devel/conan/service_provider_canopen_protocol/conan/deactivate_conanbuildenv-relwithdebinfo-x86_64.sh" && . "/home/burger_r/devel/conan/service_provider_canopen_protocol/conan/deactivate_conanautotoolstoolchain.sh"

@@ -1,0 +1,8 @@
+prefix=/volume/conan_cache/burger_r/.conan2/p/servi75e01df3d11c1/p
+libdir=${prefix}/lib
+bindir=${prefix}/bin
+
+Name: service_provider_canopen_protocol_ln_msgdef
+Description: Conan package: service_provider_canopen_protocol_ln_msgdef
+Version: 6.0.0
+Libs: -L"${libdir}"

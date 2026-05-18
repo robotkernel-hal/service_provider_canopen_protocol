@@ -1,0 +1,1 @@
+. "/home/burger_r/devel/conan/service_provider_canopen_protocol/conan/deactivate_conanrunenv-relwithdebinfo-x86_64.sh"
