@@ -20,6 +20,21 @@ class service_provider_canopen_protocol_rkgui(ConanFile):
 
     def package(self):
         copy(self, "*", self.source_folder, self.package_folder)
+    
+    def layout(self):
+        self.folders.source = "."
+        self.folders.build = "build"
+        self.folders.generators = "conan"
+
+        # In the local folder (when the package is in development, or "editable") the artifacts can be found:
+        #self.cpp.source.includedirs = ["include", "build/include"]
+        self.cpp.build.bindirs = ["."]
+        #self.cpp.build.libdirs = ["src/.libs"]
+        
+        #self.cpp.build.libs = self.libs
+
+        # In the Conan cache, we packaged everything at the default standard directories
+        #self.cpp.package.libs = self.libs
 
     def package_info(self):
         pypath1 = os.path.join(self.package_folder, "rk_gtk3_gui_plugin")
